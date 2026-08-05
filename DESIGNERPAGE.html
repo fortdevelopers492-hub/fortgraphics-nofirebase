@@ -1,0 +1,20 @@
+                <section id="page-designer-history-page" class="history-container">
+                    <div class="history-header">
+                        <h2>Activity & Transaction History</h2>
+                        <p>Comprehensive activity records of your booked projects, revisions, submissions, and payouts.</p>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div class="history-filter-bar">
+                        <button class="filter-btn active" onclick="filterHistoryRecords('all')">All Records</button>
+                        <button class="filter-btn" onclick="filterHistoryRecords('booking')">Bookings</button>
+                        <button class="filter-btn" onclick="filterHistoryRecords('submission')">Submissions</button>
+                        <button class="filter-btn" onclick="filterHistoryRecords('modification')">Modifications</button>
+                        <button class="filter-btn" onclick="filterHistoryRecords('payment')">Payments & Approvals</button>
+                    </div>
+
+                    <!-- History Log Feed Container -->
+                    <div id="history-log-feed" class="history-log-feed">
+                        <!-- Records render dynamically here -->
+                    </div>
+                </section>
