@@ -1,5 +1,5 @@
 /**
- * Fort Mart Core Single-Page Application Application State Machine Archetype
+ * Fort Graphics Core Single-Page Application Application State Machine Archetype
  */
 
 // Global App State Data Layer Initialization
@@ -25,14 +25,43 @@ let APP_STATE = {
 // Platform Default Core Mock Database Entities Baseline Arrays 
 let SYSTEM_DATABASE = {
     users: [
-        { uid: "admin", identityName: "Fort Mart Admin", accountType: "business", country: "Nigeria", dialingCode: "+234", identifierText: "Fort Mart", secretKey: "Fortmart492#", avatar: "fort mart logo.png", businessName: "8028241162 - Opay", businessInfo: "Phillip Imonode Ihidero", verificationStatus: "verified" },
+        { uid: "admin", identityName: "Fort Graphics Admin", accountType: "business", country: "Nigeria", dialingCode: "+234", identifierText: "fortdevelopers492@gmail.com", secretKey: "Fortmart492#", avatar: "fort mart logo.png", businessName: "8028241162 - Opay", businessInfo: "Phillip Imonode Ihidero", verificationStatus: "verified" },
         { uid: "user_sarah", identityName: "Sarah Enterprise Hub", accountType: "business", country: "Nigeria", dialingCode: "+234", identifierText: "sarah@gmail.com", secretKey: "Sarah123!", avatar: "", businessName: "1111111111 - First Bank", businessInfo: "Placeholder", verificationStatus: "verified" },
         { uid: "user_john", identityName: "John Mark", accountType: "personal", country: "Nigeria", dialingCode: "+234", identifierText: "john@gmail.com", secretKey: "John456!", avatar: "", verificationStatus: "verified" },
-        { uid: "user_david", identityName: "David Enterprise Hub", accountType: "personal", country: "Nigeria", dialingCode: "+234", identifierText: "david@gmail.com", secretKey: "David123!", avatar: "", businessName: "1111111111 - First Bank", businessInfo: "Placeholder", verificationStatus: "verified" },
+        { uid: "user_david", identityName: "David Enterprise Hub", accountType: "business", country: "Nigeria", dialingCode: "+234", identifierText: "david@gmail.com", secretKey: "David123!", avatar: "", businessName: "1111111111 - First Bank", businessInfo: "Placeholder", verificationStatus: "verified" },
     ],
     products: [
-        {requestId: "req_kbvdvbhdbvhff", clientUid: "user_john", targetDesignerUid: "", details: "" }
-
+        {
+            pid: "proj-1042",
+            ownerUid: "usr-8821",
+            name: "E-Commerce Mobile App UI/UX Redesign",
+            info: "Looking for a modern, sleek UI/UX overhaul for a fashion marketplace app. Needs 5 primary screens: Home feed, Product detail view, Shopping cart modal, Checkout workflow, and User profile.",
+            price: 45000,
+            countryScope: "Nigeria",
+            coverPhoto: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=600&q=80",
+            isBooked: false,
+            status: "available",
+            bookedByUid: null,
+            assets: [
+                { id: "asset-001", fileName: "brand_guidelines.pdf", dataUrl: "#" },
+                { id: "asset-002", fileName: "wireframe_concept.png", dataUrl: "#" }
+            ]
+        },
+        {
+            pid: "proj-1043",
+            ownerUid: "usr-8821",
+            name: "Fintech Dashboard Landing Page Design",
+            info: "Minimalist landing page design for a corporate payment gateway solution. Must include dark mode toggle previews and interactive feature comparison tables.",
+            price: 60000,
+            countryScope: "Nigeria",
+            coverPhoto: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80",
+            isBooked: true,
+            status: "booked",
+            bookedByUid: "usr-9903",
+            assets: [
+                { id: "asset-003", fileName: "project_brief.docx", dataUrl: "#" }
+            ]
+        }
     ],
     chats: [],
     platformFeedback: [],
@@ -116,12 +145,27 @@ function administrativeSaveAndRefreshDisplay(activeProductId = null) {
 
 // Local Storage Baseline State Synchronization Functions
 function syncPlatformDatabaseStateToWebStorage() {
-    localStorage.setItem("FORT_GRAPHICS_DB_STATE", JSON.stringify(SYSTEM_DATABASE));
+    try {
+        localStorage.setItem("FORT_GRAPHICS_DB_STATE", JSON.stringify(SYSTEM_DATABASE));
+    } catch (error) {
+        console.error("Failed to persist system state to LocalStorage:", error);
+    }
 }
+
 function loadPlatformDatabaseStateFromWebStorage() {
-    const cachedStateData = localStorage.getItem("FORT_GRAPHICS_DB_STATE");
-    if(cachedStateData) {
-        SYSTEM_DATABASE = JSON.parse(cachedStateData);
+    try {
+        const cachedStateData = localStorage.getItem("FORT_GRAPHICS_DB_STATE");
+        if (cachedStateData) {
+            const parsedData = JSON.parse(cachedStateData);
+            
+            // Safely update the object without breaking variable references
+            Object.assign(SYSTEM_DATABASE, parsedData);
+            
+            // Ensure essential schema properties exist
+            SYSTEM_DATABASE.users = SYSTEM_DATABASE.users || [];
+        }
+    } catch (error) {
+        console.error("Failed to load or parse system state from LocalStorage:", error);
     }
 }
 
@@ -244,11 +288,14 @@ function displayConfirmationModalOverlayAction(messageStringText, callbackFuncti
     });
 }
 
-// 1. Closes the main modal directly
+/**
+ * 1. Closes the main modal directly
+ */
 function closeActiveModalDirectly(modalElementId) {
     const modalNode = document.getElementById(modalElementId);
     if (modalNode) {
         modalNode.classList.remove("active");
+        modalNode.style.display = "none"; // Fix: Hide the modal display inline style
     }
 }
 
@@ -352,7 +399,7 @@ function triggerAuthenticationModalSequence() {
 function renderSignInModalStepContentLayout() {
     const wrapperTargetNode = document.getElementById("auth-modal-content");
     wrapperTargetNode.innerHTML = `
-        <h2>Sign In to Fort Mart</h2>
+        <h2>Sign In to Fort Graphics</h2>
         <div class="form-input-container">
             <label>Select Preferred Location:</label>
             <select id="auth-signin-country" class="form-field-control">
@@ -558,11 +605,11 @@ function renderSignUpModalWizardStepOne() {
         
         <div class="form-checkbox-group-row margin-top-xs">
             <input type="checkbox" id="chk-reg-terms" onchange="evaluateSignUpStepOneFormCompletenessStateValidation()">
-            <label for="chk-reg-terms" style="font-size:0.82rem;">I accept the <a href="fort mart terms and conditions.html" >terms and conditions</a></label>
+            <label for="chk-reg-terms" style="font-size:0.82rem;">I accept the <a href="fort graphics terms and conditions.html" >terms and conditions</a></label>
         </div>
         <div class="form-checkbox-group-row margin-top-xs">
             <input type="checkbox" id="chk-reg-privacy" onchange="evaluateSignUpStepOneFormCompletenessStateValidation()">
-            <label for="chk-reg-privacy" style="font-size:0.82rem;">I accept the <a href="fort mart privacy policy.html" >privacy policy</a></label>
+            <label for="chk-reg-privacy" style="font-size:0.82rem;">I accept the <a href="fort graphics privacy policy.html" >privacy policy</a></label>
         </div>
 
         <div class="btn-group margin-top-md">
@@ -649,11 +696,11 @@ function renderSignUpModalWizardStepTwo() {
 
 function toggleSignUpStepTwoClassificationFormsLayout(selectedClassificationType) {
     const fieldsWrapper = document.getElementById("signup-dynamic-fields-wrapper");
-    if(selectedClassificationType === 'personal') {
+    if (selectedClassificationType === 'personal') {
         fieldsWrapper.innerHTML = `
             <div class="form-input-container">
                 <label>Input Personal Full Name:</label>
-                <input type="text" id="reg-personal-name" class="form-field-control" placeholder="Enter personal name" oninput="validateSignUpStepTwoDataFormCompleteness()">
+                <input type="text" name="name" id="reg-personal-name" class="form-field-control" placeholder="Enter personal name" oninput="validateSignUpStepTwoDataFormCompleteness()">
             </div>
             <div class="form-input-container">
                 <label>Upload Profile Picture (Optional):</label>
@@ -670,20 +717,20 @@ function toggleSignUpStepTwoClassificationFormsLayout(selectedClassificationType
     } else {
         fieldsWrapper.innerHTML = `
             <div class="form-input-container">
-                <label>Bank Account Number - Bank Name:</label>
-                <input type="number" id="reg-biz-name" class="form-field-control" placeholder="e.g. 8011111111 - Opay" oninput="validateSignUpStepTwoDataFormCompleteness()">
+                <label>Input Business Name:</label>
+                <input type="text" id="reg-biz-name" class="form-field-control" placeholder="Enter corporate trading identity" oninput="validateSignUpStepTwoDataFormCompleteness()">
             </div>
             <div class="form-input-container">
-                <label>Bank Account Name:</label>
-                <input type="text" id="reg-biz-info" class="form-field-control" placeholder="e.g. Fort Mart, David Bright" oninput="validateSignUpStepTwoDataFormCompleteness()">
-            </div>
-            <div class="form-input-container">
-                <label>Abilities:</label>
-                <input type="text" id="reg-biz-deals" class="form-field-control" placeholder="Explain your abilities to facilitate approval" oninput="validateSignUpStepTwoDataFormCompleteness()">
+                <label>Provide Business Public Summary:</label>
+                <input type="text" id="reg-biz-info" class="form-field-control" placeholder="Briefly describe your company summary" oninput="validateSignUpStepTwoDataFormCompleteness()">
             </div>
             <div class="form-input-container">
                 <label>Input Personal Full Name:</label>
-                <input type="text" id="reg-personal-name" class="form-field-control" placeholder="Enter operational manager name" oninput="validateSignUpStepTwoDataFormCompleteness()">
+                <input type="text" name="name" id="reg-personal-name" class="form-field-control" placeholder="Enter operational manager name" oninput="validateSignUpStepTwoDataFormCompleteness()">
+            </div>
+            <div class="form-input-container">
+                <label>Inventory Specification:</label>
+                <input type="text" id="reg-biz-deals" class="form-field-control" placeholder="e.g. Mobile Accessories, Clothing apparel, Laptops" oninput="validateSignUpStepTwoDataFormCompleteness()">
             </div>
             <div class="form-input-container">
                 <label>Upload Profile Picture (Optional):</label>
@@ -694,6 +741,10 @@ function toggleSignUpStepTwoClassificationFormsLayout(selectedClassificationType
                     </div>
                 </div>
                 <input type="file" id="reg-avatar-file" class="form-field-control" accept=".png, .jpg, .jpeg" onchange="processSignUpAvatarFileSelection()">
+            </div>
+            <div class="form-checkbox-group-row margin-top-xs">
+                <input type="checkbox" id="chk-reg-designer-terms" onchange="validateSignUpStepTwoDataFormCompleteness()">
+                <label for="chk-reg-designer-terms" style="font-size:0.82rem;">I accept the <a href="fort graphics designer's terms and conditions.html">designer's terms and conditions</a></label>
             </div>
             <div id="err-reg-step2-feedback" class="text-danger-alert hidden-node">Input all information properly</div>
         `;
@@ -765,8 +816,8 @@ function validateSignUpStepTwoDataFormCompleteness() {
         return;
     }
 
-    if(currentType === 'personal') {
-        if(personalNameInput.length > 1) {
+    if (currentType === 'personal') {
+        if (personalNameInput.length > 1) {
             nextBtn.disabled = false;
             nextBtn.classList.remove("faintly-colored");
         } else {
@@ -777,8 +828,9 @@ function validateSignUpStepTwoDataFormCompleteness() {
         const bizNameInput = document.getElementById("reg-biz-name").value.trim();
         const bizInfoInput = document.getElementById("reg-biz-info").value.trim();
         const bizDealsInput = document.getElementById("reg-biz-deals").value.trim();
+        const designerTermsAccepted = document.getElementById("chk-reg-designer-terms") ? document.getElementById("chk-reg-designer-terms").checked : false;
         
-        if(personalNameInput.length > 1 && bizNameInput.length > 1 && bizInfoInput.length > 1 && bizDealsInput.length > 1) {
+        if (personalNameInput.length > 1 && bizNameInput.length > 1 && bizInfoInput.length > 1 && bizDealsInput.length > 1 && designerTermsAccepted) {
             nextBtn.disabled = false;
             nextBtn.classList.remove("faintly-colored");
         } else {
@@ -792,7 +844,7 @@ function executeProcessSignUpStepTwoNextSequenceAction() {
     const currentType = document.getElementById("reg-account-type").value;
     SIGNUP_WIZARD_TEMPORARY_OBJECT.accountType = currentType;
     SIGNUP_WIZARD_TEMPORARY_OBJECT.identityName = document.getElementById("reg-personal-name").value.trim();
-    if(currentType === 'business') {
+    if (currentType === 'business') {
         SIGNUP_WIZARD_TEMPORARY_OBJECT.businessName = document.getElementById("reg-biz-name").value.trim();
         SIGNUP_WIZARD_TEMPORARY_OBJECT.businessInfo = document.getElementById("reg-biz-info").value.trim();
         SIGNUP_WIZARD_TEMPORARY_OBJECT.productsDealtIn = document.getElementById("reg-biz-deals").value.trim();
@@ -1064,7 +1116,7 @@ function executeFinalizeAccountRegistrationPipelineSubmission() {
         return;
     }
 
-    // Clean up tracking scopes
+    // Clean up tracking scopes & intervals
     if (SIGNUP_WIZARD_TEMPORARY_OBJECT.signUpOtpInterval) {
         clearInterval(SIGNUP_WIZARD_TEMPORARY_OBJECT.signUpOtpInterval);
         SIGNUP_WIZARD_TEMPORARY_OBJECT.signUpOtpInterval = null;
@@ -1093,12 +1145,24 @@ function executeFinalizeAccountRegistrationPipelineSubmission() {
     
     SYSTEM_DATABASE.users.push(finalNewUserRecord);
 
+    // Save state to local storage
     syncPlatformDatabaseStateToWebStorage();
     
-    APP_STATE.currentUser = finalNewUserRecord;
+    // Close registration modal
     closeActiveModalDirectly('auth-modal');
+
+    if (isDesignerAccount) {
+        // Designer account flow: Await admin approval
+        alert("Registration submitted! Your designer account is pending administrative approval before full activation.");
+    } else {
+        // Standard personal account flow: Immediate login & welcome display
+        APP_STATE.currentUser = finalNewUserRecord;
+        document.getElementById("welcome-modal")?.classList.add("active");
+    }
     
-    document.getElementById("welcome-modal").classList.add("active");
+    // Clear wizard memory object to prevent data leakage in subsequent registrations
+    SIGNUP_WIZARD_TEMPORARY_OBJECT = {};
+
     if (typeof renderMarketplaceProductsDisplayLoop === "function") {
         renderMarketplaceProductsDisplayLoop();
     }
@@ -1460,6 +1524,8 @@ function handleGlobalSearch(searchStringQuery) {
          renderUserConversationsLogRoster();
     } else if(APP_STATE.activeViewPage === 'my-account') {
          executeFilteringSettingsContentPaneRowsNodesDisplay(APP_STATE.searchQuery);
+    } else if(APP_STATE.activeViewPage === 'designer-history-page') {
+         renderDesignerHistoryDashboard();
     }
 }
 
@@ -1477,119 +1543,152 @@ if (SYSTEM_DATABASE.adminSlot === undefined) {
 }
 
 /**
- * 1. AVAILABLE PROJECTS PAGE RENDER LOOP
+ * RENDER MARKETPLACE PRODUCTS DISPLAY LOOP
+ * Excludes both completed/downloaded projects AND currently booked projects
+ * so only unbooked, active projects appear in the public marketplace.
  */
 function renderMarketplaceProductsDisplayLoop() {
-    // Personal users are redirected to my-account settings section
-    if (APP_STATE.currentUser && APP_STATE.currentUser.accountType === 'personal') {
-        navigateToPage('my-account');
-        switchSettingsSection('my-products');
-        return;
-    }
+    try {
+        const container = document.getElementById("products-display-grid") || 
+                          (typeof DOM_ELEMENT_REFERENCES !== 'undefined' ? DOM_ELEMENT_REFERENCES.productsContainer : null);
 
-    const loopDisplayTargetGrid = document.getElementById("products-display-grid");
-    if (!loopDisplayTargetGrid) return;
-    
-    loopDisplayTargetGrid.innerHTML = "";
-    let baselineCurrencyIndicatorSymbol = "₦";
-    let locationFilteringCriteriaString = "Nigeria";
-    
-    if (APP_STATE.currentUser) {
-        locationFilteringCriteriaString = APP_STATE.currentUser.country || "Nigeria";
-        baselineCurrencyIndicatorSymbol = (APP_STATE.currentUser.country === 'Nigeria') ? '₦' : '$';
-    }
-    
-    const leaderboard = SYSTEM_DATABASE.pinnedLeaderboard || [];
-    const adminSlotPid = SYSTEM_DATABASE.adminSlot;
-    
-    // Filter available projects (Exclude booked/completed items from public available marketplace)
-    let computedInventoryOutputArray = SYSTEM_DATABASE.products.filter(item => {
-        if (item.isBooked || item.status === 'booked' || item.status === 'completed') return false;
-        
-        const structuralOwnerAccountPointer = SYSTEM_DATABASE.users.find(u => u.uid === item.ownerUid);
-        if (!structuralOwnerAccountPointer) return false;
-        if (structuralOwnerAccountPointer.country !== locationFilteringCriteriaString) return false;
-        if (APP_STATE.currentSelectedCategory !== 'Trending' && item.category !== APP_STATE.currentSelectedCategory) return false;
-        
-        if (APP_STATE.searchQuery !== '') {
-            const matchTitleFlag = item.name.toLowerCase().includes(APP_STATE.searchQuery);
-            const matchInfoFlag = item.info.toLowerCase().includes(APP_STATE.searchQuery);
-            if (!matchTitleFlag && !matchInfoFlag) return false;
+        if (!container) return;
+
+        if (typeof SYSTEM_DATABASE === 'undefined' || !SYSTEM_DATABASE.products) {
+            window.SYSTEM_DATABASE = window.SYSTEM_DATABASE || {};
+            window.SYSTEM_DATABASE.products = [];
         }
-        return true;
-    });
 
-    // Priority Sorting: Admin Slot -> Standard Pinned -> Hit count descending
-    let adminPinnedItem = computedInventoryOutputArray.filter(item => item.pid === adminSlotPid);
-    let pinnedItems = computedInventoryOutputArray.filter(item => leaderboard.includes(item.pid) && item.pid !== adminSlotPid);
-    let normalItems = computedInventoryOutputArray.filter(item => !leaderboard.includes(item.pid) && item.pid !== adminSlotPid);
+        const currentUser = (typeof APP_STATE !== 'undefined' && APP_STATE.currentUser) ? APP_STATE.currentUser : null;
 
-    pinnedItems.sort((first, second) => leaderboard.indexOf(first.pid) - leaderboard.indexOf(second.pid));
-    normalItems.sort((first, second) => (second.clickCount || 0) - (first.clickCount || 0));
-
-    let displayArrayToProcess = [...adminPinnedItem, ...pinnedItems, ...normalItems];
-
-    if (displayArrayToProcess.length === 0) {
-        loopDisplayTargetGrid.innerHTML = `<div style="grid-column: 1/-1; padding: 30px; text-align: center; color: #718096;">No available design requests matching your criteria.</div>`;
-        return;
-    }
-    
-    displayArrayToProcess.forEach((product) => {
-        const contextualOwnerRecord = SYSTEM_DATABASE.users.find(u => u.uid === product.ownerUid);
-        const ownerCorporateEntityLabel = contextualOwnerRecord ? (contextualOwnerRecord.identityName || contextualOwnerRecord.username) : "Customer Account";
-        const ownerCircularAvatarSrcString = (contextualOwnerRecord && contextualOwnerRecord.avatar) ? contextualOwnerRecord.avatar : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23718096'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
-        const cardContainerBlockElement = document.createElement("div");
-        cardContainerBlockElement.className = "product-item-card-container rounded-rect";
-        
-        const isProductAdminPinned = (product.pid === adminSlotPid);
-        const isProductPinned = leaderboard.includes(product.pid);
-        
-        let pinnedBadgeHTML = '';
-        if (isProductAdminPinned) {
-            pinnedBadgeHTML = `<span style="background:crimson; color:white; padding:2px 8px; font-size:0.7rem; border-radius:4px; font-weight:bold; margin-left:auto;">👑</span>`;
-        } else if (isProductPinned) {
-            pinnedBadgeHTML = `<span style="background:var(--fort-blue-light); color:white; padding:2px 8px; font-size:0.7rem; border-radius:4px; font-weight:bold; margin-left:auto;">📌</span>`;
-        }
-            
-        cardContainerBlockElement.innerHTML = `
-            <div class="poster-profile-strip" onclick="event.stopPropagation(); launchDetailedUserProfileContextOverlaySummaryModal('${product.ownerUid}')">
-                <img class="mini-profile-avatar circle-container" src="${ownerCircularAvatarSrcString}" alt="Avatar">
-                <span class="mini-profile-business-name">${ownerCorporateEntityLabel} (Customer)</span>
-                ${pinnedBadgeHTML}
-            </div>
-            <div class="product-card-image-box" onclick="launchComprehensiveProductSpecificationsExpandedModalView('${product.pid}')">
-                <img src="${product.coverPhoto || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23cbd5e0\'><path d=\'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z\'/></svg>'}" alt="Project Spec Frame">
-            </div>
-            <div class="product-card-details-block" onclick="launchComprehensiveProductSpecificationsExpandedModalView('${product.pid}')">
-                <h4 class="product-card-title">${product.name}</h4>
-                <p class="product-card-description">${product.info.substring(0, 100)}</p>
-                <div class="product-card-price-tag">${baselineCurrencyIndicatorSymbol}${product.price ? product.price.toLocaleString() : '1,100'}</div>
-                <div class="btn-group" style="margin-top:auto;">
-                    <button class="btn-blue" style="width:100%; font-size:0.8rem;" onclick="event.stopPropagation(); executeBookProjectWorkflow('${product.pid}')">📌 Book Project</button>
+        if (!currentUser) {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; background: #f9fafb; border: 2px dashed #e5e7eb; border-radius: 12px; margin: 20px 0;">
+                    <h3 style="font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 6px;">Sign up or login to view available projects or make project requests.</h3>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+                        <button class="btn-blue" onclick="renderSignUpModalWizardStepOne()">Sign Up</button>
+                        <button class="btn-blue" onclick="triggerAuthenticationModalSequence()">Sign In</button>
+                    </div>
                 </div>
-            </div>
-        `;
-        loopDisplayTargetGrid.appendChild(cardContainerBlockElement);
-    });
+            `;
+            return;
+        }
+
+        const accountType = (currentUser.accountType || currentUser.role || 'personal').toLowerCase();
+        let allProducts = [...SYSTEM_DATABASE.products];
+        let displayProducts = [];
+
+        // STRICT FILTER: Exclude COMPLETED projects AND BOOKED projects
+        let activeMarketplaceProducts = allProducts.filter(item => {
+            const isCompleted = item.status === 'completed' || item.isCompleted;
+            const isBooked = item.isBooked || item.status === 'booked';
+            return !isCompleted && !isBooked;
+        });
+
+        if (accountType === 'personal') {
+            const currentUid = currentUser.uid || currentUser.id;
+            displayProducts = activeMarketplaceProducts.filter(item => item.ownerUid === currentUid);
+        } else if (['vendor', 'admin', 'business', 'designer'].includes(accountType)) {
+            const userCountry = currentUser.country || 'Nigeria';
+            displayProducts = activeMarketplaceProducts.filter(item => {
+                return !item.countryScope || item.countryScope === userCountry || item.countryScope === 'All';
+            });
+        } else {
+            displayProducts = activeMarketplaceProducts;
+        }
+
+        const searchQuery = (typeof APP_STATE !== 'undefined' && APP_STATE.searchQuery ? APP_STATE.searchQuery : "").trim().toLowerCase();
+
+        if (searchQuery) {
+            displayProducts = displayProducts.filter(prod => {
+                const name = (prod.name || prod.title || "").toLowerCase();
+                const description = (prod.info || prod.instructions || "").toLowerCase();
+                const ownerName = (prod.ownerName || prod.clientName || prod.requesterName || prod.userName || "").toLowerCase();
+
+                return name.includes(searchQuery) || description.includes(searchQuery) || ownerName.includes(searchQuery);
+            });
+        }
+
+        if (!displayProducts || displayProducts.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; background: #f9fafb; border: 2px dashed #e5e7eb; border-radius: 12px; margin: 20px 0;">
+                    <h3 style="font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 6px;">No Available Projects</h3>
+                </div>
+            `;
+            return;
+        }
+
+        let cardsHtml = '';
+        displayProducts.forEach(prod => {
+            const coverImage = prod.coverPhoto || (prod.assets && prod.assets.length > 0 ? prod.assets[0].dataUrl : 'https://via.placeholder.com/300x200?text=No+Image');
+            const formattedPrice = prod.price ? `₦${prod.price.toLocaleString()}` : '₦1,000';
+            const itemTitle = prod.name || prod.title || 'Untitled Project';
+
+            cardsHtml += `
+                <div class="product-card" data-pid="${prod.pid}" 
+                     onclick="launchComprehensiveProductSpecificationsExpandedModalView(event, '${prod.pid}')" 
+                     style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #fff; display: flex; flex-direction: column; cursor: pointer;">
+                    <div style="height: 180px; width: 100%; background: #f3f4f6; overflow: hidden; position: relative;">
+                        <img src="${coverImage}" alt="${itemTitle}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">${itemTitle}</h4>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
+                            <span style="font-size: 16px; font-weight: 700; color: #059669;">${formattedPrice}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = cardsHtml;
+
+    } catch (err) {
+        console.error("Error in renderMarketplaceProductsDisplayLoop:", err);
+    }
 }
 
 /**
  * EXPANDED PRODUCT SPECIFICATIONS MODAL VIEW
+ * Includes Admin Controls: Delete Listing (unbooked) & View Designer's Info (booked)
  */
-function launchComprehensiveProductSpecificationsExpandedModalView(productIdTokenKey) {
-    if (!APP_STATE.currentUser) {
-        triggerAuthenticationModalSequence();
+function launchComprehensiveProductSpecificationsExpandedModalView(evt, productIdTokenKey) {
+    // Handle overload where event parameter might be omitted
+    if (typeof evt === 'string' && !productIdTokenKey) {
+        productIdTokenKey = evt;
+        evt = null;
+    }
+
+    if (evt && evt.stopPropagation) {
+        evt.stopPropagation();
+    }
+
+    const currentUser = (typeof APP_STATE !== 'undefined' && APP_STATE.currentUser) ? APP_STATE.currentUser : null;
+
+    if (!currentUser) {
+        if (typeof triggerAuthenticationModalSequence === 'function') {
+            triggerAuthenticationModalSequence();
+        }
         return;
     }
     
-    recordProductHitCount(productIdTokenKey);
+    if (typeof recordProductHitCount === 'function') {
+        recordProductHitCount(productIdTokenKey);
+    }
     
     let targetedProductItemMatch = SYSTEM_DATABASE.products.find(p => p.pid === productIdTokenKey);
     if (!targetedProductItemMatch) return;
     
     const operationalTargetProfileOwnerRecord = SYSTEM_DATABASE.users.find(u => u.uid === targetedProductItemMatch.ownerUid);
+    const detailOverlayNode = document.getElementById("product-detail-modal");
     const detailOverlayBodyNode = document.getElementById("product-detail-modal-body");
-    let baselineCurrencySymbolSign = (APP_STATE.currentUser && APP_STATE.currentUser.country === 'Nigeria') ? '₦' : '$';
+
+    if (!detailOverlayNode || !detailOverlayBodyNode) {
+        console.error("Modal target elements '#product-detail-modal' or '#product-detail-modal-body' were not found in the DOM.");
+        return;
+    }
+
+    let baselineCurrencySymbolSign = (currentUser && currentUser.country === 'Nigeria') ? '₦' : '$';
     
     let operationalActionControlsLayoutStringHTML = `
         <button class="btn-blue" style="width:100%;" onclick="closeActiveModalDirectly('product-detail-modal'); executeBookProjectWorkflow('${targetedProductItemMatch.pid}')">📌 Book Project</button>
@@ -1597,25 +1696,47 @@ function launchComprehensiveProductSpecificationsExpandedModalView(productIdToke
 
     // --- ADMIN PANEL CONTROLS ---
     let adminPinControlHTML = "";
-    const isUserAdmin = (APP_STATE.currentUser.uid === 'admin' || APP_STATE.currentUser.id === 'admin');
+    const isUserAdmin = (currentUser.uid === 'admin' || currentUser.id === 'admin' || currentUser.accountType === 'admin');
     
     if (isUserAdmin) {
         const leaderboard = SYSTEM_DATABASE.pinnedLeaderboard || [];
         const isCurrentPinned = leaderboard.includes(targetedProductItemMatch.pid);
         const isAdminSlotOccupant = (SYSTEM_DATABASE.adminSlot === targetedProductItemMatch.pid);
+        const isBooked = targetedProductItemMatch.isBooked || targetedProductItemMatch.status === 'booked';
+        
+        let adminActionButtons = '';
+        
+        if (!isBooked) {
+            // Delete Listing Button for Unbooked Projects
+            adminActionButtons += `
+                <button class="btn-danger" style="flex: 1; padding: 6px; font-size: 0.8rem; font-weight: bold; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                    onclick="triggerAdminDeleteUnbookedProductWorkflow('${targetedProductItemMatch.pid}')">
+                    🗑️ Delete Listing
+                </button>
+            `;
+        } else {
+            // View Designer's Info Button for Booked Projects
+            adminActionButtons += `
+                <button class="btn-blue" style="flex: 1; padding: 6px; font-size: 0.8rem; font-weight: bold; background: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                    onclick="viewBookedDesignerInfoModal('${targetedProductItemMatch.pid}')">
+                    🎨 View Designer's Info
+                </button>
+            `;
+        }
         
         adminPinControlHTML = `
-            <div style="background: #edf2f7; border: 1px dashed var(--fort-blue-primary); padding: 12px; border-radius: 6px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
-                <span style="font-size: 0.85rem; font-weight: bold; color: var(--fort-blue-dark);">🛡️ Admin Controls Hub</span>
-                <div style="display: flex; gap: 8px;">
+            <div style="background: #edf2f7; border: 1px dashed var(--fort-blue-primary, #2563eb); padding: 12px; border-radius: 6px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <span style="font-size: 0.85rem; font-weight: bold; color: var(--fort-blue-dark, #1e3a8a);">🛡️ Admin Controls Hub</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button class="${isCurrentPinned ? 'btn-gray' : 'btn-blue'}" style="flex: 1; padding: 6px; font-size: 0.8rem; font-weight: bold;"
                         onclick="executeToggleProductPinState('${targetedProductItemMatch.pid}')">
-                        ${isCurrentPinned ? '🛑 Unpin Standard Slot' : '📌 Pin to Standard'}
+                        ${isCurrentPinned ? '🛑 Unpin Standard' : '📌 Pin Standard'}
                     </button>
                     <button class="${isAdminSlotOccupant ? 'btn-danger' : 'btn-success'}" style="flex: 1; padding: 6px; font-size: 0.8rem; font-weight: bold; background: ${isAdminSlotOccupant ? 'crimson':'green'}; color: white; border:none; border-radius:4px; cursor:pointer;"
                         onclick="toggleAdminExclusiveSlotState('${targetedProductItemMatch.pid}')">
-                        ${isAdminSlotOccupant ? '❌ Unassign Admin Slot' : '👑 Assign Admin Slot'}
+                        ${isAdminSlotOccupant ? '❌ Unassign Admin' : '👑 Assign Admin'}
                     </button>
+                    ${adminActionButtons}
                 </div>
             </div>
         `;
@@ -1635,17 +1756,17 @@ function launchComprehensiveProductSpecificationsExpandedModalView(productIdToke
     }
 
     detailOverlayBodyNode.innerHTML = `
-        <div class="modal-expanded-header-row" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--fort-gray-border); padding-bottom:14px;">
+        <div class="modal-expanded-header-row" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--fort-gray-border, #e5e7eb); padding-bottom:14px;">
             <h3>Project Specifications & Prompts</h3>
             <button onclick="closeActiveModalDirectly('product-detail-modal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
         </div>
         <div class="modal-expanded-content-split-grid margin-top-md" style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
             <div class="expanded-left-visuals-column">
-               <div class="expanded-master-image-box rounded-rect" style="width:100%; height:320px; background-color:#fcfcfc; overflow:hidden; border:1px solid var(--fort-gray-border); display:flex; align-items:center; justify-content:center;">
+               <div class="expanded-master-image-box rounded-rect" style="width:100%; height:320px; background-color:#fcfcfc; overflow:hidden; border:1px solid var(--fort-gray-border, #e5e7eb); display:flex; align-items:center; justify-content:center;">
                     <img src="${productDisplayImage}" style="width:100%; height:100%; object-fit:contain;" alt="Master Expanded Product Frame">
                 </div>
                 <div style="margin-top:12px;">
-                    <h5 style="text-transform:uppercase; font-size:0.75rem; color:var(--fort-gray-slate);">Customer Project Assets</h5>
+                    <h5 style="text-transform:uppercase; font-size:0.75rem; color:var(--fort-gray-slate, #64748b);">Customer Project Assets</h5>
                     <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">
                         ${assetsMarkup}
                     </div>
@@ -1653,19 +1774,19 @@ function launchComprehensiveProductSpecificationsExpandedModalView(productIdToke
             </div>
             <div class="expanded-right-details-column" style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="${(operationalTargetProfileOwnerRecord && operationalTargetProfileOwnerRecord.avatar) ? operationalTargetProfileOwnerRecord.avatar : 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23a0aec0\'><path d=\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\'/></svg>'}" style="width:44px; height:44px;" class="circle-container" alt="Vendor Big Profile Photo">
+                    <img src="${(operationalTargetProfileOwnerRecord && operationalTargetProfileOwnerRecord.avatar) ? operationalTargetProfileOwnerRecord.avatar : 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23a0aec0\'><path d=\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\'/></svg>'}" style="width:44px; height:44px; border-radius:50%;" class="circle-container" alt="Vendor Big Profile Photo">
                     <div>
-                        <h4 style="color:var(--fort-blue-primary);">${operationalTargetProfileOwnerRecord ? (operationalTargetProfileOwnerRecord.identityName || operationalTargetProfileOwnerRecord.username) : 'Customer Request Profile'}</h4>
-                        <span style="font-size:0.75rem; color:var(--fort-gray-slate);">Country: ${operationalTargetProfileOwnerRecord ? operationalTargetProfileOwnerRecord.country : 'Nigeria'}</span>
+                        <h4 style="color:var(--fort-blue-primary, #2563eb); margin:0;">${operationalTargetProfileOwnerRecord ? (operationalTargetProfileOwnerRecord.identityName || operationalTargetProfileOwnerRecord.username) : 'Customer Request Profile'}</h4>
+                        <span style="font-size:0.75rem; color:var(--fort-gray-slate, #64748b);">Country: ${operationalTargetProfileOwnerRecord ? operationalTargetProfileOwnerRecord.country : 'Nigeria'}</span>
                     </div>
                 </div>
                 
-                <h2 style="color:var(--fort-blue-dark); font-weight:800; margin-top:8px;">${targetedProductItemMatch.name}</h2>
-                <div style="font-size:1.6rem; font-weight:900; color:var(--fort-blue-light);">${baselineCurrencySymbolSign}${targetedProductItemMatch.price ? targetedProductItemMatch.price.toLocaleString() : '1,100'}</div>
+                <h2 style="color:var(--fort-blue-dark, #1e3a8a); font-weight:800; margin-top:8px; margin-bottom:0;">${targetedProductItemMatch.name}</h2>
+                <div style="font-size:1.6rem; font-weight:900; color:var(--fort-blue-light, #3b82f6);">${baselineCurrencySymbolSign}${targetedProductItemMatch.price ? targetedProductItemMatch.price.toLocaleString() : '1,000'}</div>
                 
                 <div class="spec-note-paragraph-block">
-                    <h5 style="text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; color:var(--fort-gray-slate);">Customer Design Prompts & Instructions</h5>
-                    <p style="font-size:0.95rem; line-height:1.4; color:var(--fort-blue-dark); margin-top:4px;">${targetedProductItemMatch.info}</p>
+                    <h5 style="text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; color:var(--fort-gray-slate, #64748b);">Customer Design Prompts & Instructions</h5>
+                    <p style="font-size:0.95rem; line-height:1.4; color:var(--fort-blue-dark, #1e3a8a); margin-top:4px;">${targetedProductItemMatch.info}</p>
                 </div>
                 
                 ${adminPinControlHTML}
@@ -1676,7 +1797,10 @@ function launchComprehensiveProductSpecificationsExpandedModalView(productIdToke
             </div>
         </div>
     `;
-    document.getElementById("product-detail-modal").classList.add("active");
+
+    // Ensure display property and active CSS class are both set
+    detailOverlayNode.style.display = 'block';
+    detailOverlayNode.classList.add("active");
 }
 
 /**
@@ -2088,7 +2212,7 @@ function initialDirectMessageCommunicationPipelineSetup(targetVendorOwnerUidToke
         return;
     }
     if(APP_STATE.currentUser.uid === targetVendorOwnerUidTokenKey) {
-        showTopRightToast("You are the seller, and according to Fort Mart application protocols there is no message yourself feature.", "info");
+        showTopRightToast("You are the seller, and according to Fort Graphics application protocols there is no message yourself feature.", "info");
         return;
     }
     
@@ -2300,7 +2424,7 @@ function sendChatMessageDirect() {
     }
     
     if(APP_STATE.activeChatTargetUserHash === 'admin') {
-         showTopRightToast("The Fort Mart profile can't be replied.", "info");
+         showTopRightToast("The Fort Graphics profile can't be replied.", "info");
          textInputNodeElement.value = "";
          return;
     }
@@ -2355,7 +2479,7 @@ function handleMessageAttachedFileSelectionEvent(inputNodeContextElement) {
     if (!inputNodeContextElement.files || inputNodeContextElement.files.length === 0) return;
     if (!APP_STATE.currentUser || !APP_STATE.activeChatTargetUserHash) return;
     if (APP_STATE.activeChatTargetUserHash === 'admin') {
-         showTopRightToast("The Fort Mart profile can't be replied.", "info");
+         showTopRightToast("The Fort Graphics profile can't be replied.", "info");
          inputNodeContextElement.value = "";
          return;
     }
@@ -2668,13 +2792,16 @@ function launchUploadProductPasswordVerificationStep() {
         <br>
         
         <div class="btn-group">
-            <button onclick="closeActiveModalDirectly('auth-modal')" class="btn-gray">Cancel</button> 
-            <button onclick="verifyPasswordAndProceed()" class="btn-blue">Verify Password Phrase</button>
+            <button type="button" onclick="closeActiveModalDirectly('auth-modal')" class="btn-gray">Cancel</button> 
+            <button type="button" onclick="verifyPasswordAndProceed()" class="btn-blue">Verify Password Phrase</button>
         </div>
     `;
     
     const authModal = document.getElementById("auth-modal");
-    if (authModal) authModal.classList.add("active");
+    if (authModal) {
+        authModal.classList.add("active");
+        authModal.style.display = "flex";
+    }
 }
 
 /**
@@ -2690,7 +2817,11 @@ function verifyPasswordAndProceed() {
     if (errNode) errNode.classList.add("hidden-node");
     
     if (!APP_STATE || !APP_STATE.currentUser) {
-        showTopRightToast("User session invalid.", "error");
+        if (typeof showTopRightToast === 'function') {
+            showTopRightToast("User session invalid.", "error");
+        } else {
+            alert("User session invalid.");
+        }
         return;
     }
 
@@ -2701,8 +2832,10 @@ function verifyPasswordAndProceed() {
         if (errNode) {
             errNode.innerText = "Incorrect Password"; 
             errNode.classList.remove("hidden-node"); 
-        } else {
+        } else if (typeof showTopRightToast === 'function') {
             showTopRightToast("Incorrect Password", "error");
+        } else {
+            alert("Incorrect Password");
         }
         return;
     }
@@ -2727,12 +2860,12 @@ function launchUploadProductInventoryModalFormLayoutShell() {
         <p style="font-size:0.8rem; color:var(--fort-gray-slate); margin-top:2px;">Products created are localized and viewable exclusively within corresponding matching legal registration domain regions [Country Scope: <strong>${userCountry}</strong>]</p>
         
         <div class="form-input-container margin-top-sm">
-            <label>Project Title</label>
+            <label>Project Title *</label>
             <input type="text" id="proj-new-title" class="form-field-control" placeholder="e.g. Logo Design for Fort Graphics">
         </div>
  
         <div class="form-input-container">
-            <label>Instructions:</label>
+            <label>Instructions *</label>
             <input type="text" id="newprod-info" class="form-field-control" placeholder="Max 100 text characters symbols structural limits constraints loops">
         </div>
         <div class="form-input-container">
@@ -2748,13 +2881,16 @@ function launchUploadProductInventoryModalFormLayoutShell() {
         </div>
         
         <div class="btn-group margin-top-md">
-            <button onclick="closeActiveModalDirectly('auth-modal')" class="btn-gray">Cancel Form</button>
-            <button id="btn-publish-post" onclick="executePipelineCommitNewInventoryPostRecord()" class="btn-blue">Publish Active Post</button>
+            <button type="button" onclick="closeActiveModalDirectly('auth-modal')" class="btn-gray">Cancel Form</button>
+            <button type="button" id="btn-publish-post" onclick="executePipelineCommitNewInventoryPostRecord()" class="btn-blue">Publish Active Post</button>
         </div>
     `;
 
     const authModal = document.getElementById("auth-modal");
-    if (authModal) authModal.classList.add("active");
+    if (authModal) {
+        authModal.classList.add("active");
+        authModal.style.display = "flex";
+    }
 
     // Render initial empty state grid with + button
     renderAssetsPreviewGrid();
@@ -2777,14 +2913,14 @@ function renderAssetsPreviewGrid() {
                 <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 0.65rem; padding: 2px 4px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center;">
                     ${asset.name}
                 </div>
-                <button onclick="removeAssetImageFromGrid(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">✕</button>
+                <button type="button" onclick="removeAssetImageFromGrid(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">✕</button>
             </div>
         `;
     });
 
     // Append '+' trigger button with unlimited upload capacity
     html += `
-        <button class="asset-add-square-btn" onclick="openFileUploadModal()" style="width: 70px; height: 70px; border-radius: 6px; border: 2px dashed #09a5db; background: #f4faff; color: #09a5db; font-size: 26px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Add Image Asset">
+        <button type="button" class="asset-add-square-btn" onclick="openFileUploadModal()" style="width: 70px; height: 70px; border-radius: 6px; border: 2px dashed #09a5db; background: #f4faff; color: #09a5db; font-size: 26px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Add Image Asset">
             +
         </button>
     `;
@@ -2834,8 +2970,8 @@ function openFileUploadModal() {
             <div id="asset-upload-error" style="color:red; font-size:0.8rem; margin-bottom:12px; display:none;"></div>
 
             <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn-gray" style="padding:8px 16px; border:none; border-radius:4px; cursor:pointer;" onclick="closeFileUploadModal()">Cancel</button>
-                <button class="btn-blue" style="background:#09a5db; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:600; cursor:pointer;" onclick="confirmAddAssetImage()">Add</button>
+                <button type="button" class="btn-gray" style="padding:8px 16px; border:none; border-radius:4px; cursor:pointer;" onclick="closeFileUploadModal()">Cancel</button>
+                <button type="button" class="btn-blue" style="background:#09a5db; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:600; cursor:pointer;" onclick="confirmAddAssetImage()">Add</button>
             </div>
         </div>
     `;
@@ -2879,7 +3015,6 @@ function handleAssetFileSelection(event) {
         }
 
         if (customNameInput && !customNameInput.value.trim()) {
-            // Default file name without extension
             const defaultName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
             customNameInput.value = defaultName;
         }
@@ -2911,7 +3046,6 @@ function confirmAddAssetImage() {
         return;
     }
 
-    // Add asset to project array (unlimited limit)
     UPLOADED_ASSET_IMAGES.push({
         id: "asset_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
         name: customName,
@@ -2919,87 +3053,152 @@ function confirmAddAssetImage() {
         dataUrl: TEMP_SELECTED_ASSET_FILE.dataUrl
     });
 
-    // Re-render thumbnail grid in project post modal
     renderAssetsPreviewGrid();
-
-    // Close modal
     closeFileUploadModal();
 }
 
 /**
- * Commits the new inventory product post record along with all attached project image assets
+ * Commits the new inventory product post record ONLY after Paystack payment succeeds
  */
 function executePipelineCommitNewInventoryPostRecord() {
-    const titleInput = document.getElementById("proj-new-title");
-    const infoInput = document.getElementById("newprod-info");
-    const priceInput = document.getElementById("newprod-price");
+    try {
+        const publishBtn = document.getElementById("btn-publish-post");
+        const titleInput = document.getElementById("proj-new-title");
+        const infoInput = document.getElementById("newprod-info");
+        const priceInput = document.getElementById("newprod-price");
 
-    const title = titleInput ? titleInput.value.trim() : "";
-    const info = infoInput ? infoInput.value.trim() : "";
-    const price = priceInput ? priceInput.value.trim() : "2000";
+        const title = titleInput ? titleInput.value.trim() : "";
+        const info = infoInput ? infoInput.value.trim() : "";
+        const price = priceInput ? parseFloat(priceInput.value) || 2000 : 2000;
 
-    if (!title) {
-        if (typeof showTopRightToast === 'function') {
-            showTopRightToast("Please provide a project title.", "error");
-        } else {
-            alert("Please provide a project title.");
+        // Both Project Title and Instructions are COMPULSORY
+        if (!title || !info) {
+            if (typeof showTopRightToast === 'function') {
+                showTopRightToast("Project title and instructions are compulsory fields.", "error");
+            } else {
+                alert("Project title and instructions are compulsory fields.");
+            }
+            return;
         }
-        return;
-    }
 
-    if (!APP_STATE || !APP_STATE.currentUser) {
-        if (typeof showTopRightToast === 'function') {
-            showTopRightToast("User session invalid.", "error");
+        if (typeof APP_STATE === 'undefined' || !APP_STATE || !APP_STATE.currentUser) {
+            if (typeof showTopRightToast === 'function') {
+                showTopRightToast("User session invalid.", "error");
+            } else {
+                alert("User session invalid.");
+            }
+            return;
         }
-        return;
-    }
 
-    const userUid = APP_STATE.currentUser.uid || APP_STATE.currentUser.id;
-    const userCountry = APP_STATE.currentUser.country || 'Global';
+        const userEmail = APP_STATE.currentUser.identifierText || "customer@fortmart.com";
 
-    const newProductPost = {
-        productId: "prod_" + Date.now(),
-        ownerUid: userUid,
-        title: title,
-        instructions: info,
-        price: price,
-        countryScope: userCountry,
-        assets: [...UPLOADED_ASSET_IMAGES], // All attached image assets
-        createdAt: new Date().toISOString()
-    };
-
-    // Store in system database if defined
-    if (typeof SYSTEM_DATABASE !== 'undefined') {
-        if (!SYSTEM_DATABASE.products) {
-            SYSTEM_DATABASE.products = [];
+        // Paystack inline payment gate
+        if (typeof PaystackPop === 'undefined') {
+            alert("Paystack SDK failed to load. Please check your internet connection.");
+            return;
         }
-        SYSTEM_DATABASE.products.push(newProductPost);
-    }
 
-    // Synchronize web storage state
-    if (typeof syncPlatformDatabaseStateToWebStorage === "function") {
-        syncPlatformDatabaseStateToWebStorage();
-    } else if (typeof commitDatabasesStateToLocalStorage === "function") {
-        commitDatabasesStateToLocalStorage();
-    }
+        if (publishBtn) {
+            publishBtn.disabled = true;
+            publishBtn.innerText = "Processing Payment...";
+        }
 
-    if (typeof showTopRightToast === 'function') {
-        showTopRightToast("Active post published successfully!", "success");
-    } else {
-        alert("Active post published successfully!");
-    }
+        const handler = PaystackPop.setup({
+            key: 'pk_test_8e350f62114983f1cd23b0944668d435a6e74214', // Active Paystack Public Key
+            email: userEmail,
+            amount: price * 100, // Paystack works in kobo/cents
+            currency: "NGN",
+            callback: function(response) {
+                try {
+                    // Payment was successful -> now write the item to storage!
+                    const userUid = APP_STATE.currentUser.uid || APP_STATE.currentUser.id;
+                    const userCountry = APP_STATE.currentUser.country || 'Nigeria';
+                    const firstAssetCover = UPLOADED_ASSET_IMAGES.length > 0 ? UPLOADED_ASSET_IMAGES[0].dataUrl : '';
 
-    // Clear attached assets state
-    UPLOADED_ASSET_IMAGES = [];
+                    const newProductPost = {
+                        pid: "prod_" + Date.now(),
+                        ownerUid: userUid,
+                        name: title,               // Aligned to system key: 'name'
+                        title: title,
+                        info: info,                // Aligned to system key: 'info'
+                        instructions: info,
+                        price: price,
+                        countryScope: userCountry,
+                        coverPhoto: firstAssetCover, // Ensures grid cards render cover image properly
+                        assets: [...UPLOADED_ASSET_IMAGES],
+                        paystackRef: response.reference,
+                        createdAt: new Date().toISOString()
+                    };
 
-    // Close the active modal
-    if (typeof closeActiveModalDirectly === 'function') {
-        closeActiveModalDirectly('auth-modal');
-    } else {
-        const modal = document.getElementById("auth-modal");
-        if (modal) modal.classList.remove("active");
+                    // Save into database memory
+                    if (typeof SYSTEM_DATABASE === 'undefined') window.SYSTEM_DATABASE = {};
+                    if (!SYSTEM_DATABASE.products) SYSTEM_DATABASE.products = [];
+                    SYSTEM_DATABASE.products.push(newProductPost);
+
+                    // Persist storage
+                    if (typeof syncPlatformDatabaseStateToWebStorage === "function") {
+                        syncPlatformDatabaseStateToWebStorage();
+                    } else if (typeof commitDatabasesStateToLocalStorage === "function") {
+                        commitDatabasesStateToLocalStorage();
+                    }
+
+                    if (typeof showTopRightToast === 'function') {
+                        showTopRightToast("Payment complete! Active post published successfully.", "success");
+                    } else {
+                        alert("Payment complete! Active post published successfully.");
+                    }
+                } catch (dataErr) {
+                    console.error("Error committing product post record:", dataErr);
+                } finally {
+                    // ALWAYS clean up state & UI, even if re-rendering fails
+                    UPLOADED_ASSET_IMAGES = [];
+                    closeActiveModalDirectly('auth-modal');
+
+                    if (publishBtn) {
+                        publishBtn.disabled = false;
+                        publishBtn.innerText = "Publish Active Post";
+                    }
+
+                    // Safely trigger page update outside main stack trace
+                    setTimeout(() => {
+                        if (typeof renderMarketplaceProductsDisplayLoop === 'function') {
+                            renderMarketplaceProductsDisplayLoop();
+                        }
+                    }, 100);
+                }
+            },
+            onClose: function() {
+                if (publishBtn) {
+                    publishBtn.disabled = false;
+                    publishBtn.innerText = "Publish Active Post";
+                }
+                if (typeof showTopRightToast === 'function') {
+                    showTopRightToast("Payment sequence cancelled.", "info");
+                }
+            }
+        });
+
+        handler.openIframe();
+
+    } catch (err) {
+        console.error("Error executing publish post pipeline:", err);
+        alert("An error occurred while launching payment. Check browser console for details.");
+        const publishBtn = document.getElementById("btn-publish-post");
+        if (publishBtn) {
+            publishBtn.disabled = false;
+            publishBtn.innerText = "Publish Active Post";
+        }
     }
 }
+
+// Ensure function is attached directly to window for global inline accessibility
+window.executePipelineCommitNewInventoryPostRecord = executePipelineCommitNewInventoryPostRecord;
+window.openFileUploadModal = openFileUploadModal;
+window.closeFileUploadModal = closeFileUploadModal;
+window.handleAssetFileSelection = handleAssetFileSelection;
+window.confirmAddAssetImage = confirmAddAssetImage;
+window.removeAssetImageFromGrid = removeAssetImageFromGrid;
+window.verifyPasswordAndProceed = verifyPasswordAndProceed;
 
 /**
  * Step 1: Pre-check Validation & Launch Password Verification for Design Requests
@@ -3024,14 +3223,12 @@ function handleRequestSubmissionPrecheck() {
         return;
     }
 
-    // Save request payload state
     DESIGN_REQUEST_WIZARD.requestPayload = {
         details: details,
         fileInput: document.getElementById("req-file-assets")?.files || null,
         timestamp: new Date().toISOString()
     };
 
-    // Close upload modal and transition directly to Password Modal
     document.getElementById("file-upload-modal")?.remove();
     initiateRequestPasswordModal();
 }
@@ -3059,8 +3256,8 @@ function initiateRequestPasswordModal() {
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn-gray" style="padding:8px 16px; border:none; border-radius:4px; cursor:pointer;" onclick="document.getElementById('request-password-modal').remove()">Cancel</button>
-                <button class="btn-blue" style="background:#09a5db; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:600; cursor:pointer;" onclick="validateRequestPasswordAndProceed()">Verify Password</button>
+                <button type="button" class="btn-gray" style="padding:8px 16px; border:none; border-radius:4px; cursor:pointer;" onclick="document.getElementById('request-password-modal').remove()">Cancel</button>
+                <button type="button" class="btn-blue" style="background:#09a5db; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:600; cursor:pointer;" onclick="validateRequestPasswordAndProceed()">Verify Password</button>
             </div>
         </div>
     `;
@@ -3086,13 +3283,12 @@ function validateRequestPasswordAndProceed() {
         return;
     }
 
-    // Close password modal and jump straight to Paystack Confirmation Modal
     document.getElementById("request-password-modal").remove();
     launchDesignRequestPaystackConfirmationModal();
 }
 
 /**
- * Step 3: Payment Confirmation Modal (Displays 500 Naira fee & 1000 Naira balance note)
+ * Step 3: Payment Confirmation Modal
  */
 function launchDesignRequestPaystackConfirmationModal() {
     let checkoutModal = document.getElementById("request-paystack-checkout-modal");
@@ -3103,13 +3299,13 @@ function launchDesignRequestPaystackConfirmationModal() {
     checkoutModal.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;";
 
     const userEmail = APP_STATE.currentUser.identifierText || APP_STATE.currentUser.email || 'user@fortmart.com';
-    const upfrontPayment = 500; // 500 NGN
+    const upfrontPayment = 500;
 
     checkoutModal.innerHTML = `
         <div class="paystack-modal-box" style="background: white; border-radius: 8px; max-width: 420px; width: 100%; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #ccc;">
             <div class="paystack-header-brand" style="background-color: #09a5db; color: white; padding: 20px; text-align: center;">
                 <h3 style="margin:0; color:white;">Design Request Deposit Confirmation</h3>
-                <span style="font-size:0.75rem; opacity:0.9;">Fort Mart Checkout Gateway</span>
+                <span style="font-size:0.75rem; opacity:0.9;">Fort Graphics Checkout Gateway</span>
             </div>
             <div class="paystack-body-content" style="padding: 24px;">
                 <p style="font-size:0.85rem; color:#0d233a; margin-bottom:12px;">You are authorizing an initial payment deposit to send your design request.</p>
@@ -3130,8 +3326,8 @@ function launchDesignRequestPaystackConfirmationModal() {
                 </div>
             </div>
             <div class="paystack-footer-row" style="padding: 16px 24px; background: #f9f9f9; border-top: 1px solid #eee; display: flex; justify-content: space-between;">
-                <button class="btn-gray" style="padding:8px 16px; border:none; border-radius:4px; cursor:pointer;" onclick="document.getElementById('request-paystack-checkout-modal').remove()">Cancel</button>
-                <button class="btn-blue" style="background-color:#3bb75e; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:700; cursor:pointer;" onclick="executeRequestPaystackIframePopRuntime()">Proceed to Payment Method</button>
+                <button type="button" class="btn-gray" style="padding:8px 16px; border:none; border-radius:4px; cursor:pointer;" onclick="document.getElementById('request-paystack-checkout-modal').remove()">Cancel</button>
+                <button type="button" class="btn-blue" style="background-color:#3bb75e; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:700; cursor:pointer;" onclick="executeRequestPaystackIframePopRuntime()">Proceed to Payment Method</button>
             </div>
         </div>
     `;
@@ -3155,15 +3351,14 @@ function executeRequestPaystackIframePopRuntime() {
     const emailField = document.getElementById("request-paystack-email-field");
     const userEmail = emailField ? emailField.value : APP_STATE.currentUser.identifierText;
     const userUid = APP_STATE.currentUser ? (APP_STATE.currentUser.uid || APP_STATE.currentUser.id) : 'GUEST_USER';
-    const upfrontPayment = 500; // 500 NGN
+    const upfrontPayment = 500;
 
-    // Close preview modal
     document.getElementById('request-paystack-checkout-modal')?.remove();
 
     let paymentConfig = {
         key: 'pk_test_8e350f62114983f1cd23b0944668d435a6e74214',
         email: userEmail,
-        amount: upfrontPayment * 100, // 50,000 kobo = 500 NGN
+        amount: upfrontPayment * 100,
         currency: "NGN",
         ref: 'REQ-DESIGN-' + userUid + '-' + Math.floor((Math.random() * 1000000000) + 1),
         metadata: {
@@ -3199,7 +3394,6 @@ function executeRequestPaystackIframePopRuntime() {
 function processDesignRequestPostPaymentSuccess(paymentResponse) {
     const userUid = APP_STATE.currentUser.uid || APP_STATE.currentUser.id;
 
-    // Create Request Object
     const newRequestObject = {
         requestId: "req_" + Date.now(),
         clientUid: userUid,
@@ -3213,7 +3407,6 @@ function processDesignRequestPostPaymentSuccess(paymentResponse) {
         createdAt: new Date().toISOString()
     };
 
-    // Store in system database if active
     if (typeof SYSTEM_DATABASE !== 'undefined') {
         if (!SYSTEM_DATABASE.requests) {
             SYSTEM_DATABASE.requests = [];
@@ -3221,7 +3414,6 @@ function processDesignRequestPostPaymentSuccess(paymentResponse) {
         SYSTEM_DATABASE.requests.push(newRequestObject);
     }
 
-    // Persist storage state
     if (typeof syncPlatformDatabaseStateToWebStorage === "function") {
         syncPlatformDatabaseStateToWebStorage();
     } else if (typeof commitDatabasesStateToLocalStorage === "function") {
@@ -3234,7 +3426,6 @@ function processDesignRequestPostPaymentSuccess(paymentResponse) {
         alert("Payment successful! Your design request has been sent.");
     }
 
-    // Clear runtime wizard state
     DESIGN_REQUEST_WIZARD.requestPayload = null;
     DESIGN_REQUEST_WIZARD.targetDesignerUid = null;
 }
@@ -3769,10 +3960,17 @@ function renderAccountInventoryLedgerManagementDashboardGrid() {
     listContainerNodeElement.innerHTML = "";
     if (!APP_STATE.currentUser) return;
 
+    // Reload latest platform state baseline to prevent stale cache readings
+    if (typeof loadPlatformDatabaseStateFromWebStorage === "function") {
+        loadPlatformDatabaseStateFromWebStorage();
+    }
+
     // Check if the current user is a designer; render designer panel if true
     const userRole = APP_STATE.currentUser.accountType || APP_STATE.currentUser.type;
-    if (userRole === 'designer') {
-        renderDesignerProjectsWorkspaceDashboard(listContainerNodeElement);
+    if (userRole === 'designer' || userRole === 'business') {
+        if (typeof renderDesignerProjectsWorkspaceDashboard === 'function') {
+            renderDesignerProjectsWorkspaceDashboard(listContainerNodeElement);
+        }
         return;
     }
     
@@ -3783,7 +3981,7 @@ function renderAccountInventoryLedgerManagementDashboardGrid() {
         listContainerNodeElement.innerHTML = `
             <div style="padding:24px; text-align:center; color:var(--fort-gray-slate);">
                 <h4>You have no requested projects.</h4>
-                <p style="font-size:0.85rem; margin-bottom:16px;">Post a design request to hire professional designers on Fort Mart.</p>
+                <p style="font-size:0.85rem; margin-bottom:16px;">Post a design request to hire professional designers on Fort Graphics.</p>
                 <button class="btn-blue" onclick="handleFloatingActionButtonTrigger()">+ Request New Project</button>
             </div>`;
         return;
@@ -3808,10 +4006,11 @@ function renderAccountInventoryLedgerManagementDashboardGrid() {
             </div>`;
 
         if (item.hasSubmittedDraft && item.submittedDesignDraft) {
+            const showWatermark = !item.isDownloadedUnlocked;
             imagePreviewContent = `
-                <div class="watermark-overlay-container">
-                    <img src="${item.submittedDesignDraft}" alt="Draft Preview">
-                    <div class="watermark-text-overlay">BALANCE NOT PAID</div>
+                <div class="watermark-overlay-container" style="position:relative; overflow:hidden; border-radius:6px;">
+                    <img src="${item.submittedDesignDraft}" alt="Draft Preview" style="width:100%; max-height:260px; object-fit:contain; display:block;">
+                    ${showWatermark ? '<div class="watermark-text-overlay"><strong>BALANCE NOT PAID</strong></div>' : ''}
                 </div>`;
         }
 
@@ -3821,7 +4020,7 @@ function renderAccountInventoryLedgerManagementDashboardGrid() {
             actionButtonsHTML = `
                 <div style="display:flex; gap:10px; margin-top:14px;">
                     <button class="btn-gray" style="flex:1;" onclick="launchCustomerRevisionModal('${item.pid}')">Request Modifications</button>
-                    <button class="btn-blue" style="flex:1; background:#059669;" onclick="initiateCustomerDownloadPaymentSequence('${item.pid}')">💳 Download (₦1,100)</button>
+                    <button class="btn-blue" style="flex:1; background:#059669;" onclick="initiateCustomerDownloadPaymentSequence('${item.pid}')">💳 Download (₦1,000)</button>
                 </div>
             `;
         }
@@ -3851,7 +4050,9 @@ function renderAccountInventoryLedgerManagementDashboardGrid() {
                 `;
             } else {
                 // Purge logic triggering automatically after 24h
-                executePurgeExpiredProjectFilesData(item.pid);
+                if (typeof executePurgeExpiredProjectFilesData === 'function') {
+                    executePurgeExpiredProjectFilesData(item.pid);
+                }
                 return;
             }
         }
@@ -4003,7 +4204,7 @@ function launchCustomerPaystackCheckoutModal(productId) {
     checkoutModal.innerHTML = `
         <div class="paystack-modal-box" style="background: white; border-radius: 8px; max-width: 420px; width: 100%; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
             <div class="paystack-header-brand" style="background-color: #09a5db; color: white; padding: 20px; text-align: center;">
-                <h3 style="margin:0; color:white;">Fort Mart Gateway</h3>
+                <h3 style="margin:0; color:white;">Fort Graphics Gateway</h3>
                 <span style="font-size:0.75rem; opacity:0.9;">Project Final Balance Settlement</span>
             </div>
             <div class="paystack-body-content" style="padding: 24px;">
@@ -4080,51 +4281,78 @@ function executeCustomerPaystackSplitRuntime(productId) {
 /**
  * UNLOCK FILE & AUTOMATICALLY TRIGGER CLEAN CANVAS DOWNLOAD
  */
+/**
+ * UNLOCK FILE & AUTOMATICALLY TRIGGER CLEAN CANVAS DOWNLOAD
+ */
 function processPostPaymentDownloadUnlock(productId) {
     const project = SYSTEM_DATABASE.products.find(p => p.pid === productId);
     if (!project) return;
 
     const timestamp = new Date().toISOString();
 
+    // Mark completed status flags
     project.isDownloadedUnlocked = true;
     project.downloadUnlockedTimestamp = Date.now();
     project.status = 'completed';
+    project.isCompleted = true; // Flag for strict completed state checks
 
     const designerUid = project.bookedByUid;
     const requester = SYSTEM_DATABASE.users.find(u => u.uid === project.ownerUid) || {};
 
     // 1. Log Approval Record
-    recordDesignerActivityLog({
-        designerUid: designerUid,
-        productId: project.pid,
-        productName: project.name,
-        requesterUid: project.ownerUid,
-        requesterName: requester.name || requester.username || "Customer",
-        type: 'approved',
-        actionText: 'Project approved & downloaded by customer',
-        timestamp: timestamp
-    });
+    if (typeof recordDesignerActivityLog === 'function') {
+        recordDesignerActivityLog({
+            designerUid: designerUid,
+            productId: project.pid,
+            productName: project.name,
+            requesterUid: project.ownerUid,
+            requesterName: requester.name || requester.username || "Customer",
+            type: 'approved',
+            actionText: 'Project approved & downloaded by customer',
+            timestamp: timestamp
+        });
 
-    // 2. Log Payment Record (₦1,100 balance payment)
-    recordDesignerActivityLog({
-        designerUid: designerUid,
-        productId: project.pid,
-        productName: project.name,
-        requesterUid: project.ownerUid,
-        requesterName: requester.name || requester.username || "Customer",
-        type: 'payment',
-        actionText: 'Balance payment credited to account',
-        amountText: '₦1,100',
-        timestamp: timestamp
-    });
+        // 2. Log Payment Record (₦1,100 balance payment)
+        recordDesignerActivityLog({
+            designerUid: designerUid,
+            productId: project.pid,
+            productName: project.name,
+            requesterUid: project.ownerUid,
+            requesterName: requester.name || requester.username || "Customer",
+            type: 'payment',
+            actionText: 'Balance payment credited to account',
+            amountText: '₦1,100',
+            timestamp: timestamp
+        });
+    }
 
-    // Move from active booked in designer's profile
+    // Unmark active booking status
     project.isBooked = false; 
 
-    syncPlatformDatabaseStateToWebStorage();
-    showTopRightToast("Payment Successful! Generating clean design download...", "success");
+    // Persist updated database state
+    if (typeof syncPlatformDatabaseStateToWebStorage === 'function') {
+        syncPlatformDatabaseStateToWebStorage();
+    }
+    
+    if (typeof showTopRightToast === 'function') {
+        showTopRightToast("Payment Successful! Generating clean design download...", "success");
+    }
 
-    renderAccountInventoryLedgerManagementDashboardGrid();
+    // Refresh UI components across all views so project leaves marketplace & designer workspace
+    if (typeof renderMarketplaceProductsDisplayLoop === 'function') {
+        renderMarketplaceProductsDisplayLoop();
+    }
+    if (typeof renderAccountInventoryLedgerManagementDashboardGrid === 'function') {
+        renderAccountInventoryLedgerManagementDashboardGrid();
+    }
+    if (typeof renderDesignerProjectsWorkspaceDashboard === 'function') {
+        renderDesignerProjectsWorkspaceDashboard();
+    }
+    if (typeof renderDesignerHistoryDashboard === 'function') {
+        renderDesignerHistoryDashboard();
+    }
+
+    // Execute the final clean asset canvas download
     executeCleanAssetDownloadDirectly(productId);
 }
 
@@ -5137,12 +5365,12 @@ function executeVerifyUpgradeOtpSubmission() {
     // Clear timers and close modal
     closeUpgradeOtpModal();
 
-    // Trigger Step 3: Launch Fort Mart Final Paystack Confirmation Modal
+    // Trigger Step 3: Launch Fort Graphics Final Paystack Confirmation Modal
     launchBusinessUpgradePaystackConfirmationModal();
 }
 
 /**
- * Step 3: Final Fort Mart Confirmation Modal prior to Paystack Checkout launch
+ * Step 3: Final Fort Graphics Confirmation Modal prior to Paystack Checkout launch
  */
 function launchBusinessUpgradePaystackConfirmationModal() {
     let checkoutModal = document.getElementById("upgrade-paystack-checkout-modal");
@@ -5158,7 +5386,7 @@ function launchBusinessUpgradePaystackConfirmationModal() {
     checkoutModal.innerHTML = `
         <div class="paystack-modal-box" style="background: white; border-radius: 8px; max-width: 420px; width: 100%; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--fort-gray-border, #ccc);">
             <div class="paystack-header-brand" style="background-color: #09a5db; color: white; padding: 20px; text-align: center;">
-                <h3 style="margin:0; color:white;">Fort Mart Gateway</h3>
+                <h3 style="margin:0; color:white;">Fort Graphics Gateway</h3>
                 <span style="font-size:0.75rem; opacity:0.9;">Account Plan Upgrade to Business Account</span>
             </div>
             <div class="paystack-body-content" style="padding: 24px;">
@@ -5259,8 +5487,8 @@ function processBusinessUpgradePaymentSuccess() {
         APP_STATE.currentUser.businessInfo = "Commercial business distribution account profile workspace.";
     }
 
-    // 3. Automated Message sent by Fort Mart Admin to User
-    const adminMessageText = "Congratulations! Your account has been successfully upgraded to a Business Account. You now have full access to business features on Fort Mart.";
+    // 3. Automated Message sent by Fort Graphics Admin to User
+    const adminMessageText = "Congratulations! Your account has been successfully upgraded to a Business Account. You now have full access to business features on Fort Graphics.";
     const targetChatId = "chat_admin_" + userUid;
 
     let adminChatThread = SYSTEM_DATABASE.chats.find(c => c.chatId === targetChatId);
@@ -5325,7 +5553,7 @@ function launchadvertismentofBusinessUpgrade() {
 }
 
 /**
- * RENDER DESIGNER'S MY PROJECTS DASHBOARD
+ * RENDER DESIGNER'S MY PROJECTS DASHBOARD (EXCLUDES COMPLETED PROJECTS)
  */
 function renderDesignerProjectsWorkspaceDashboard(containerNode) {
     // 1. Target node fallback if string ID or element is passed
@@ -5348,7 +5576,12 @@ function renderDesignerProjectsWorkspaceDashboard(containerNode) {
         return;
     }
 
-    const designerBookedProjects = SYSTEM_DATABASE.products.filter(p => p.bookedByUid === APP_STATE.currentUser.uid);
+    // 3. FILTER: Fetch booked projects BUT EXCLUDE completed/downloaded ones
+    const designerBookedProjects = SYSTEM_DATABASE.products.filter(p => 
+        p.bookedByUid === APP_STATE.currentUser.uid && 
+        p.status !== 'completed' && 
+        !p.isCompleted
+    );
 
     if (designerBookedProjects.length === 0) {
         containerNode.innerHTML = `
@@ -5391,8 +5624,8 @@ function renderDesignerProjectsWorkspaceDashboard(containerNode) {
                     <h3 style="margin:0; color:var(--fort-blue-dark, #0d233a);">${project.name || 'Untitled Project'}</h3>
                     <span style="font-size:0.8rem; color:var(--fort-gray-slate, #718096);">Client: <strong>${customerRecord.identityName || customerRecord.username || 'Customer'}</strong></span>
                 </div>
-                <span class="badge-status ${project.status === 'completed' ? 'badge-completed' : 'badge-pending'}">
-                    ${project.status === 'completed' ? '✅ Completed' : '⚙️ In Progress'}
+                <span class="badge-status badge-pending">
+                    ⚙️ In Progress
                 </span>
             </div>
 
@@ -5434,16 +5667,34 @@ function launchAssetManagementModal(productId, assetId) {
     let assetModal = document.getElementById("asset-manage-modal");
     if (assetModal) assetModal.remove();
 
+    // Determine target URL/Data URL for asset preview
+    const fileSource = asset.fileData || asset.dataUrl || asset.url || "";
+    
+    // Check if the file is an image by file extension or data URI prefix
+    const isImage = /\.(jpeg|jpg|gif|png|svg|webp)$/i.test(asset.fileName) || /^data:image\//i.test(fileSource);
+
     assetModal = document.createElement("div");
     assetModal.id = "asset-manage-modal";
     assetModal.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;";
 
+    let imagePreviewHTML = "";
+    if (isImage && fileSource) {
+        imagePreviewHTML = `
+            <div style="margin-bottom:14px; text-align:center; background:#f3f4f6; border:1px dashed #ccc; border-radius:6px; padding:8px; max-height:220px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <img src="${fileSource}" alt="${asset.fileName}" style="max-width:100%; max-height:200px; object-fit:contain; border-radius:4px;" onerror="this.parentNode.style.display='none';">
+            </div>
+        `;
+    }
+
     assetModal.innerHTML = `
-        <div style="background: white; border-radius: 8px; max-width: 420px; width: 90%; padding: 24px;">
-            <h3 style="margin-top:0;">Manage Asset File</h3>
+        <div style="background: white; border-radius: 8px; max-width: 420px; width: 90%; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-top:0; color:#1e3a8a;">Manage Asset File</h3>
+            
+            ${imagePreviewHTML}
+
             <div style="margin-bottom:14px;">
                 <label style="font-size:0.8rem; font-weight:600;">File Display Name</label>
-                <input type="text" id="rename-asset-input" class="form-field-control" value="${asset.fileName}" style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box;">
+                <input type="text" id="rename-asset-input" class="form-field-control" value="${asset.fileName}" style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box; border:1px solid #ccc; border-radius:4px;">
             </div>
             <div style="display:flex; justify-content:space-between; gap:8px;">
                 <button class="btn-gray" onclick="document.getElementById('asset-manage-modal').remove()">Cancel</button>
@@ -5476,8 +5727,10 @@ function executeRenameAsset(productId, assetId) {
     }
     document.getElementById("asset-manage-modal")?.remove();
     
-    // Re-render the current workspace view
-    renderDesignerProjectsWorkspaceDashboard();
+    // Re-render workspace if view handler exists
+    if (typeof renderDesignerProjectsWorkspaceDashboard === "function") {
+        renderDesignerProjectsWorkspaceDashboard();
+    }
 }
 
 function executeDownloadAsset(productId, assetId) {
@@ -5487,12 +5740,48 @@ function executeDownloadAsset(productId, assetId) {
     const asset = project.assets.find(a => a.id === assetId);
     if (!asset) return;
 
+    const fileSource = asset.fileData || asset.dataUrl || asset.url;
+    if (!fileSource || fileSource === "#") {
+        alert("No valid download source data found for this asset.");
+        return;
+    }
+
+    let downloadUrl = fileSource;
+    let createdBlobUrl = null;
+
+    // Handle base64 Data URIs to enable offline local downloads on file:/// protocol
+    if (fileSource.startsWith("data:")) {
+        try {
+            const parts = fileSource.split(",");
+            const mimeMatch = parts[0].match(/:(.*?);/);
+            const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+            const binaryString = atob(parts[1]);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            const blob = new Blob([bytes], { type: mimeType });
+            createdBlobUrl = URL.createObjectURL(blob);
+            downloadUrl = createdBlobUrl;
+        } catch (e) {
+            console.error("Base64 conversion failed, falling back to raw source:", e);
+        }
+    }
+
     const tempAnchor = document.createElement("a");
-    tempAnchor.href = asset.fileData || asset.url;
-    tempAnchor.download = asset.fileName;
+    tempAnchor.href = downloadUrl;
+    tempAnchor.download = asset.fileName || "downloaded_asset";
     document.body.appendChild(tempAnchor);
     tempAnchor.click();
     document.body.removeChild(tempAnchor);
+
+    // Clean up Blob Object URL to free memory
+    if (createdBlobUrl) {
+        setTimeout(() => URL.revokeObjectURL(createdBlobUrl), 1000);
+    }
 
     document.getElementById("asset-manage-modal")?.remove();
 }
@@ -5511,7 +5800,7 @@ function launchDesignerUploadWorkModal(productId) {
     uploadModal.innerHTML = `
         <div style="background: white; border-radius: 8px; max-width: 480px; width: 90%; padding: 24px;">
             <h3 style="margin-top:0;">Upload Recent Design Draft</h3>
-            <p style="font-size:0.85rem; color:#666;">Select an image file to transmit to the customer interface (watermark will be overlaid automatically).</p>
+            <p style="font-size:0.85rem; color:#666;">Select an image file to transmit to the customer interface.</p>
             
             <div id="draft-image-preview-container" onclick="document.getElementById('designer-file-input').click()" style="width:100%; height:200px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; background:#fafafa; margin-bottom:16px;">
                 <span id="draft-upload-placeholder-text" style="color:#a0aec0;">Click here to browse image file</span>
@@ -5558,6 +5847,8 @@ function executeSubmitDraftToCustomer(productId) {
     const project = SYSTEM_DATABASE.products.find(p => p.pid === productId);
     if (project) {
         const timestamp = new Date().toISOString();
+        
+        // Update project properties
         project.submittedDesignDraft = TEMPORARY_DESIGNER_DRAFT_BASE64;
         project.hasSubmittedDraft = true;
         project.draftSubmittedAt = timestamp;
@@ -5570,19 +5861,28 @@ function executeSubmitDraftToCustomer(productId) {
             productId: project.pid,
             productName: project.name,
             requesterUid: project.ownerUid,
-            requesterName: requester.name || requester.username || "Customer",
+            requesterName: requester.name || requester.username || requester.identityName || "Customer",
             type: 'submission',
             actionText: 'Project Submission sent to customer',
             timestamp: timestamp
         });
 
+        // 1. Sync updated system state to web storage
         syncPlatformDatabaseStateToWebStorage();
         showTopRightToast("Design draft transmitted to customer successfully!", "success");
     }
 
+    // 2. Clean up memory and modal elements FIRST
     TEMPORARY_DESIGNER_DRAFT_BASE64 = null;
-    document.getElementById("designer-upload-modal").remove();
-    renderAccountInventoryLedgerManagementDashboardGrid();
+    const modalNode = document.getElementById("designer-upload-modal");
+    if (modalNode) {
+        modalNode.remove();
+    }
+
+    // 3. Re-render UI grids cleanly after modal cleanup
+    if (typeof renderAccountInventoryLedgerManagementDashboardGrid === "function") {
+        renderAccountInventoryLedgerManagementDashboardGrid();
+    }
 }
 
 /**
@@ -6087,11 +6387,36 @@ function renderDesignerHistoryDashboard() {
     // Fetch activity records for this specific designer
     const allLogs = (SYSTEM_DATABASE.activityLogs || []).filter(log => log.designerUid === designerUid);
 
-    // Apply Filter
+    // Apply Category Filter & Search Query Filter
+    const searchQuery = (APP_STATE.searchQuery || "").toLowerCase();
+
     const filteredLogs = allLogs.filter(log => {
-        if (CURRENT_HISTORY_FILTER === 'all') return true;
-        if (CURRENT_HISTORY_FILTER === 'payment') return log.type === 'payment' || log.type === 'approved';
-        return log.type === CURRENT_HISTORY_FILTER;
+        // 1. Type/Category Filter
+        let matchesType = true;
+        if (CURRENT_HISTORY_FILTER === 'payment') {
+            matchesType = (log.type === 'payment' || log.type === 'approved');
+        } else if (CURRENT_HISTORY_FILTER !== 'all') {
+            matchesType = (log.type === CURRENT_HISTORY_FILTER);
+        }
+
+        if (!matchesType) return false;
+
+        // 2. Search Text Query Filter
+        if (searchQuery) {
+            const productName = (log.productName || "").toLowerCase();
+            const requesterName = (log.requesterName || "").toLowerCase();
+            const actionText = (log.actionText || "").toLowerCase();
+            const logType = (log.type || "").toLowerCase();
+
+            const matchesSearch = productName.includes(searchQuery) ||
+                                  requesterName.includes(searchQuery) ||
+                                  actionText.includes(searchQuery) ||
+                                  logType.includes(searchQuery);
+
+            if (!matchesSearch) return false;
+        }
+
+        return true;
     });
 
     // Sort logs descending (newest first)
@@ -6167,3 +6492,87 @@ function filterHistoryRecords(filterType) {
 
     renderDesignerHistoryDashboard();
 }
+
+
+const ad1 = {
+    type: 'video',
+    header: 'Need a Custom Website!',
+    text: 'Try Fort Developers (createawebsite.fortdevelopers.com.ng)',
+    src: 'fort advert.mp4'
+};
+
+const ad2 = {
+    type: 'image',
+    header: 'Need a Custom Website!',
+    text: 'Try Fort Developers (createawebsite.fortdevelopers.com.ng)',
+    src: 'flyer fort - landscape.png'
+};
+
+const ads = [ad1, ad2];
+
+function setupAdModal() {
+    // Retrieve previous index from localStorage, or default to -1 if not set
+    let lastIndex = parseInt(localStorage.getItem('lastAdIndex'), 10);
+    if (isNaN(lastIndex)) {
+        lastIndex = -1;
+    }
+
+    // Calculate next index in sequence (loops back to 0 when end is reached)
+    const nextIndex = (lastIndex + 1) % ads.length;
+    
+    // Save current index for the next run
+    localStorage.setItem('lastAdIndex', nextIndex);
+
+    const currentAd = ads[nextIndex];
+
+    const headerEl = document.getElementById('ad-header');
+    const textEl = document.getElementById('ad-text');
+    const mediaContainer = document.getElementById('ad-media-container');
+    const continueBtn = document.getElementById('ad-continue-btn');
+
+    // Populate header and text
+    headerEl.innerText = currentAd.header;
+    textEl.innerHTML = `<strong>${currentAd.text}</strong>`;
+    mediaContainer.innerHTML = '';
+
+    // Render appropriate media element
+    if (currentAd.type === 'video') {
+        const video = document.createElement('video');
+        video.src = currentAd.src;
+        video.autoplay = true;
+        video.muted = true; // Required for reliable autoplay across browsers
+        video.playsInline = true;
+        video.controls = true;
+        mediaContainer.appendChild(video);
+    } else {
+        const img = document.createElement('img');
+        img.src = currentAd.src;
+        img.alt = currentAd.header;
+        mediaContainer.appendChild(img);
+    }
+
+    // Enforce 7-second timer for ALL ad types
+    continueBtn.disabled = true;
+    let countdown = 7;
+    continueBtn.innerText = `Continue in ${countdown}s`;
+
+    const timer = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+            continueBtn.innerText = `Continue in ${countdown}s`;
+        } else {
+            clearInterval(timer);
+            continueBtn.disabled = false;
+            continueBtn.innerText = 'Continue';
+        }
+    }, 1000);
+}
+
+function closeActiveModalDirectlyAd(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', setupAdModal);

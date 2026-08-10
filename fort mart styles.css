@@ -108,6 +108,9 @@ body {
     width: 100%;
     max-width: 900px;
     max-height: 85vh;
+    margin: auto;             /* Forces centering inside flex container */
+    overflow-y: auto;          /* Ensures scrollability if content exceeds max-height */
+    box-sizing: border-box;
 }
 
 /* Master Form Inputs Elements Layout Styles Mapping */
@@ -318,8 +321,22 @@ body {
 }
 .floating-action-plus-button-node:hover { transform: scale(1.05); background-color: #0277bd; }
 
-.suite-extensions-vertical-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
-.suite-extension-row-card { display: flex; align-items: center; gap: 14px; padding: 14px; border: 1px solid var(--fort-gray-border); background-color: var(--fort-white-snow); }
+.suite-extensions-vertical-stack { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    margin-top: 12px; 
+}
+
+.suite-extension-row-card { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    gap: 15px; 
+    padding: 15px; 
+    border: 1px solid var(--fort-gray-border); 
+    background-color: var(--fort-white-snow, #fdfdfd); 
+}
 
 /* Base message bubble relative positioning */
 .message-bubble {
@@ -499,8 +516,21 @@ body {
 .website-info-block h3 { font-size: 1.4rem; color: var(--fort-blue-primary); font-weight: 800; }
 .website-info-block p { font-size: 1rem; color: var(--fort-blue-dark); line-height: 1.6; }
 
+/* Stack picture/logo above text on mobile screens only */
+@media (max-width: 768px) {
+    .website-meta-side {
+        flex-direction: column;
+        align-items: center; /* Center-aligns image and text block */
+        gap: 16px;
+    }
 
+    .website-info-block {
+        text-align: center; /* Center-aligns title and paragraph */
+        width: 100%;
+    }
 
+    
+}
 
 /* Platform Cards Products Discovery Grid Panel Module Layout */
 .products-master-grid-fortdev {
@@ -1095,7 +1125,7 @@ body {
 
 
 /* ==========================================
-   FORT MART PRELOADER & LOADING ANIMATION
+   Fort Graphics PRELOADER & LOADING ANIMATION
    ========================================== */
 #preloader-container {
     position: fixed;
@@ -1424,11 +1454,12 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(-30deg);
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     font-weight: 900;
-    color: rgba(220, 38, 38, 0.35);
+    color: rgba(220, 38, 38, 0.55);
+    -webkit-text-stroke: 1.5px rgba(185, 28, 28, 0.8);
     text-transform: uppercase;
-    letter-spacing: 4px;
+    letter-spacing: 5px;
     pointer-events: none;
     white-space: nowrap;
     user-select: none;
@@ -1569,14 +1600,6 @@ body {
     margin-top: 4px;
 }
 
-.history-filter-bar {
-    display: flex;
-    gap: 10px;
-    margin: 20px 0;
-    overflow-x: auto;
-    padding-bottom: 5px;
-}
-
 .filter-btn {
     background: #f1f5f9;
     border: 1px solid #cbd5e1;
@@ -1592,23 +1615,6 @@ body {
     background: #0044cc;
     color: #ffffff;
     border-color: #0044cc;
-}
-
-.history-log-feed {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.history-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .history-info-left {
@@ -1665,4 +1671,215 @@ body {
     background: #f8fafc;
     border-radius: 8px;
     border: 1px dashed #cbd5e1;
+}
+
+/* 1. Ensure the parent section takes full width and stacked layout */
+#page-designer-history-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+}
+
+
+/* 3. Ensure cards clear floats and strictly follow normal flow */
+.history-card {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    /* Remaining properties stay the same */
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Ensure the page section displays strictly as a vertical flexbox */
+#page-designer-history-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
+    height: auto; /* Prevent fixed height collapsing */
+    overflow-y: visible; /* Let normal document scroll handle height */
+    position: relative;
+}
+
+/* Prevent filter bar from collapsing or being covered */
+.history-filter-bar {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0 15px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    flex-shrink: 0; /* Prevents filter bar from shrinking when items list is long */
+    position: relative;
+    z-index: 10;
+}
+
+/* Make feed container take space below filter bar */
+.history-log-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    flex-grow: 1;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   Designer Workstation Responsive Mobile Layouts
+   ========================================================================== */
+@media (max-width: 768px) {
+    
+    /* 1. Header: Stacks "Max Active Limit: 2 Projects" badge under the description text */
+    .designer-workspace-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .designer-workspace-header .status-pill-badge {
+        align-self: flex-start !important;
+    }
+
+    /* 2. Card Content Body: Converts 2-column grid into a single vertical stack */
+    .project-expanded-card > div[style*="display:grid"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+}
+
+/* Overlay styling */
+.modal-overlay-ad {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal box container */
+.modal-box-ad {
+    background-color: #ffffff;
+    padding: 24px;
+    max-width: 450px;
+    width: 90%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Media wrapper & elements */
+.media-container-ad {
+    margin: 15px 0;
+    width: 100%;
+    max-height: 250px;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.media-container-ad img, 
+.media-container-ad video {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* Button & disabled state styling */
+.btn-blue-ad {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-blue-ad:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.btn-blue-ad:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* Icon & Text Container */
+.card-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* FontAwesome Icon Sizing */
+.card-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Image Logo Sizing (if using Option 2) */
+.card-logo-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Buttons */
+.card-btn-link {
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
+    .suite-extension-row-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-btn-link {
+        width: 100%;
+    }
+
+    .card-btn-link .btn-blue {
+        width: 100%;
+    }
+}
+
+/* Stack picture/logo above text on mobile screens only */
+@media (max-width: 768px) {
+    .website-meta-side {
+        flex-direction: column;
+        align-items: center; /* Center-aligns image and text block */
+        gap: 16px;
+    }
+
+    .website-info-block {
+        text-align: center; /* Center-aligns title and paragraph */
+        width: 100%;
+    }
+    
 }
