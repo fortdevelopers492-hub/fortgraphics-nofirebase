@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fort Graphics Marketplace</title>
-    <link rel="icon" href="Fort Logo No Background.png" type="image/png">
+    <link rel="icon" href="Fort Graphics Logo No Background.png" type="image/png">
     <link rel="stylesheet" href="fort mart styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -20,6 +20,16 @@
     <script src="Fort Mart script.js"></script>
 </head>
 <body class="mode-laptop">
+
+    <div id="preloader-container">
+        <img src="Fort Graphics Logo.png" alt="Fort Graphics Logo" class="preloader-logo">
+        
+        <div class="progress-meter-container">
+            <div id="preloader-progress-bar" class="progress-meter-bar"></div>
+        </div>
+        
+        <div id="preloader-percentage-text" class="preloader-text">Loading 0%</div>
+    </div>    
 
     <!-- Universal Custom Modal Alert Hook Target Box Container Context Matrix Grid Element -->
     <div id="alert-modal-hook-element" class="modal-overlay">
@@ -53,11 +63,17 @@
             <div id="ad-media-container" class="media-container-ad"></div>
             
             <br>
-            <!-- Continue / Close button -->
-            <button id="ad-continue-btn" onclick="closeActiveModalDirectlyAd('ad-modal')" class="btn-blue-ad">Continue</button>
+            <!-- Modal Action Buttons -->
+            <div class="ad-actions">
+                <!-- Visit / External link button -->
+                <a class="btn-blue" style="text-decoration: none !important;" id="ad-visit-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-green-ad">Visit Site</a>
+                
+                <!-- Continue / Close button -->
+                <button id="ad-continue-btn" onclick="closeActiveModalDirectlyAd('ad-modal')" class="btn-blue-ad">Continue</button>
+            </div>
         </div>
     </div>
-    
+        
     <div id="auth-modal" class="modal-overlay">
         <div class="modal-box rounded-rect" id="auth-modal-content"></div>
     </div>
@@ -96,6 +112,7 @@
                     <li id="nav-item-messages" class="hidden-admin-node" onclick="navigateToPage('designer-history-page')">📜 History</li>
                     <li id="nav-item-my-account" onclick="navigateToPage('my-account'); switchSettingsSection('account-info')">⚙️ My Account Settings</li>
                     <li id="admin-nav-item" class="hidden-admin-node" onclick="navigateToPage('admin-dashboard'); renderAdminUsersManagementList()">🛡️ Admin Dashboard</li>
+                    <li id="admin-nav-item-two" class="hidden-admin-node" onclick="navigateToPage('admin-booked-projects'); renderAdminUsersManagementList()">🛡️ Booked Projects Page</li>
                     <br>
                     <div id="justForButton" class="drawer-links-three">
                         <button id="changeable-logout-btn" onclick="doubleButtonFunction()" class="btn-blue">Sign in</button>
@@ -290,10 +307,29 @@
                                                     </div>
                                                 </div>
                                                 <div class="margin-top-md">
-                                                    <button class="btn-blue" onclick="window.open('https://fortdevelopers.com.ng', '_blank')">Visit Website</button>
+                                                    <button class="btn-blue" onclick="window.open('https://fort.com', '_blank')">Visit Website</button>
                                                 </div>                    
                                             </div>
                                         </div>
+                                        <br>
+                                        <div id="dynamic-websites-container-fortdev">
+                                            <div class="section-content-wrapper-fortdev website-section-layout">
+                                                <div class="website-meta-side">
+                                                    <div class="large-avatar-frame-fortdev rounded-rect">
+                                                        <img src="Fort Mart Logo Circle Cropped.png" alt="Fort Logo">
+                                                    </div>
+                                                    <div class="website-info-block-fortdev">
+                                                        <div class="header-inline-edit-row-fortdev">
+                                                            <h3 id="fm-title-text">Fort Mart - Marketplace and Chat</h3>
+                                                        </div>
+                                                        <p id="fm-info-text" class="margin-top-xs">An e-market which offers you the opportunity to be a consumer or a trader. There is also the chat feature which allows you to chat with your customers / retailers.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="margin-top-md">
+                                                    <button class="btn-blue" onclick="window.open('https://mart.fort.com/', '_blank')">Visit Website</button>
+                                                </div>                    
+                                            </div>
+                                        </div>                                        
                                         <br>
                                         <div id="dynamic-websites-container-fortdev">
                                             <div class="section-content-wrapper-fortdev website-section-layout">
@@ -309,26 +345,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="margin-top-md">
-                                                    <button class="btn-blue" onclick="window.open('https://createawebsite.fortdevelopers.com.ng', '_blank')">Visit Website</button>
-                                                </div>                    
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div id="dynamic-websites-container-fortdev">
-                                            <div class="section-content-wrapper-fortdev website-section-layout">
-                                                <div class="website-meta-side">
-                                                    <div class="large-avatar-frame-fortdev rounded-rect">
-                                                        <img src="Fort Logo Circle Cropped.png" alt="Fort Logo">
-                                                    </div>
-                                                    <div class="website-info-block-fortdev">
-                                                        <div class="header-inline-edit-row-fortdev">
-                                                            <h3 id="fm-title-text">Fort Graphics Marketplace</h3>
-                                                        </div>
-                                                        <p id="fm-info-text" class="margin-top-xs">A website where you can request graphic design like image editing, e-flyer design etc.</p>
-                                                    </div>
-                                                </div>
-                                                <div class="margin-top-md">
-                                                    <button class="btn-blue" onclick="window.open('https://fortdevelopers492-hub.github.io/fortgraphicsmarketplace/', '_blank')">Visit Website</button>
+                                                    <button class="btn-blue" onclick="window.open('https://createawebsite.fort.com', '_blank')">Visit Website</button>
                                                 </div>                    
                                             </div>
                                         </div>
@@ -340,8 +357,29 @@
                 </section>
 
                 <section id="page-admin-dashboard" class="view-page hidden-view">
+                    <h2>System Administration Analytical Metric Dashboard Control Matrix</h2>
+                    
+                    <div class="metrics-statistical-summary-grid margin-top-md">
+                        <div class="metric-card-box rounded-rect">
+                            <h4>Total Registered Members Registry</h4>
+                            <p class="metric-numeric-callout" id="lbl-metric-total-users-count">0 Users</p>
+                        </div>
+                        <div class="metric-card-box rounded-rect">
+                            <h4>Active Booked Projects</h4>
+                            <p class="metric-numeric-callout" id="lbl-metric-active-booked-projects-count">0 Projects</p>
+                        </div>
+                        <div class="metric-card-box rounded-rect">
+                            <h4>Active Unbooked Projects</h4>
+                            <p class="metric-numeric-callout" id="lbl-metric-active-unbooked-projects-count">0 Projects</p>
+                        </div>                        
+                        <div class="metric-card-box rounded-rect">
+                            <h4>Total Count of Project Delivered Succesfully</h4>
+                            <p class="metric-numeric-callout" id="lbl-metric-total-projects-delivered">0 Projects</p>
+                        </div>
+                    </div>
+
                     <div class="settings-section-container rounded-rect margin-top-lg" style="background:#fff;">
-                        <h3>Core Client Profiles Registry Log Control</h3>
+                        <h3>Core Client Profiles Registry Log Control</h3>     
                         <div class="margin-top-sm" style="display:flex; gap:10px;">
                             <input type="text" id="admin-user-search-bar" class="form-field-control" placeholder="Search accounts by name, email, account type, status..." oninput="renderAdminUsersManagementList()" style="flex:1;">
                         </div>
@@ -351,10 +389,24 @@
                     </div>
                 </section>
 
+                <!-- ADMIN BOOKED PROJECTS PAGE -->
+                <section id="page-admin-booked-projects" class="view-page hidden-view">
+                    <div id="admin-booked-projects-grid" class="products-master-grid"></div>
+                </section>
+               
             </main>
         </div>
 
     </div>
+
+    <!-- EXPANDED USER MANAGEMENT MODAL -->
+    <div id="user-management-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card-container" style="max-width: 500px; width: 90%; background: #fff; border-radius: 12px; padding: 24px; position: relative;">
+            <div id="user-management-modal-body">
+                <!-- Dynamic Content Injected Here -->
+            </div>
+        </div>
+    </div> 
 
     <div id="product-detail-modal" class="modal-overlay">
         <div class="modal-box-expanded rounded-rect scrollable-container" id="product-detail-modal-body"></div>

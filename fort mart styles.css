@@ -1883,3 +1883,99 @@ body {
     }
     
 }
+
+/* ==========================================================================
+   Mobile Centering for Dynamic Website Cards
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Stack the card contents vertically and center all alignment */
+    .section-content-wrapper-fortdev.website-section-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    /* 2. Stack the logo icon and text block vertically */
+    .website-meta-side {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 12px !important;
+    }
+
+    /* 3. Center header title and text descriptions */
+    .website-info-block-fortdev {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .header-inline-edit-row-fortdev {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+
+    .website-info-block-fortdev h3,
+    .website-info-block-fortdev p {
+        text-align: center !important;
+    }
+
+    /* 4. Center the button container and set button to responsive width */
+    .section-content-wrapper-fortdev .margin-top-md {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        margin-top: 14px !important;
+    }
+
+    .section-content-wrapper-fortdev .btn-blue {
+        margin: 0 auto !important;
+        min-width: 160px; /* Optional: gives a comfortable tap target on phones */
+    }
+}
+
+/* Admin Page Specific Grid Styles */
+#admin-booked-projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+/* User Card inside Modal */
+.user-profile-badge-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.user-profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #cbd5e1;
+}
+
+.btn-manage-user {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-manage-user:hover {
+    background: #1d4ed8;
+}

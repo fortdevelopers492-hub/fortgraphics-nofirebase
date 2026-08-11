@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="Fort Logo No Background.png" type="image/png">
+    <link rel="icon" href="Fort Graphics Logo No Background.png" type="image/png">
     <title>Fort Graphics - Privacy Policy Agreement Context</title>
     <script>
         const ad1 = {
-            type: 'video',
+            type: 'image',
             header: 'Need a Custom Website!',
-            text: 'Try Fort Developers (createawebsite.fortdevelopers.com.ng)',
-            src: 'fort advert.mp4'
+            text: 'Try Fort Developers (createawebsite.fort.com)',
+            src: 'flyer fort - landscape.png',
+            url: 'https://createawebsite.fort.com'
         };
 
         const ad2 = {
             type: 'image',
             header: 'Need a Custom Website!',
-            text: 'Try Fort Developers (createawebsite.fortdevelopers.com.ng)',
-            src: 'flyer fort - landscape.png'
+            text: 'Try Fort Developers (createawebsite.fort.com)',
+            src: 'flyer fort - landscape.png',
+            url: 'https://createawebsite.fort.com'
         };
 
         const ads = [ad1, ad2];
@@ -41,11 +43,26 @@
             const textEl = document.getElementById('ad-text');
             const mediaContainer = document.getElementById('ad-media-container');
             const continueBtn = document.getElementById('ad-continue-btn');
+            const visitBtn = document.getElementById('ad-visit-btn');
 
-            // Populate header and text
+            // Populate header, text, and visit button
             headerEl.innerText = currentAd.header;
             textEl.innerHTML = `<strong>${currentAd.text}</strong>`;
+            
+            if (visitBtn) {
+                visitBtn.href = currentAd.url;
+            }
+
             mediaContainer.innerHTML = '';
+            
+            // Open URL when clicking the container (opens in new tab)
+            mediaContainer.style.cursor = 'pointer';
+            mediaContainer.onclick = (e) => {
+                // Prevent triggering redirect if the user interacts with video controls
+                if (e.target.tagName !== 'VIDEO') {
+                    window.open(currentAd.url, '_blank', 'noopener,noreferrer');
+                }
+            };
 
             // Render appropriate media element
             if (currentAd.type === 'video') {
@@ -55,6 +72,14 @@
                 video.muted = true; // Required for reliable autoplay across browsers
                 video.playsInline = true;
                 video.controls = true;
+                
+                // Open URL when clicking video background without triggering play/pause controls conflict
+                video.addEventListener('click', (e) => {
+                    // If controls area isn't being clicked directly
+                    e.stopPropagation();
+                    window.open(currentAd.url, '_blank', 'noopener,noreferrer');
+                });
+
                 mediaContainer.appendChild(video);
             } else {
                 const img = document.createElement('img');
@@ -88,7 +113,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', setupAdModal);
-    </script>     
+    </script>       
     <style>
         /* General Page Styling */
         body { 
@@ -335,8 +360,14 @@
             <div id="ad-media-container" class="media-container-ad"></div>
             
             <br>
-            <!-- Continue / Close button -->
-            <button id="ad-continue-btn" onclick="closeActiveModalDirectlyAd('ad-modal')" class="btn-blue-ad">Continue</button>
+            <!-- Modal Action Buttons -->
+            <div class="ad-actions">
+                <!-- Visit / External link button -->
+                <a class="btn-blue-ad" style="text-decoration: none !important;" id="ad-visit-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-green-ad">Visit Site</a>
+                
+                <!-- Continue / Close button -->
+                <button id="ad-continue-btn" onclick="closeActiveModalDirectlyAd('ad-modal')" class="btn-blue-ad">Continue</button>
+            </div>
         </div>
     </div>
 

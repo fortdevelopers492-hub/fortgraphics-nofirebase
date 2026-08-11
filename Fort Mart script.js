@@ -30,39 +30,7 @@ let SYSTEM_DATABASE = {
         { uid: "user_john", identityName: "John Mark", accountType: "personal", country: "Nigeria", dialingCode: "+234", identifierText: "john@gmail.com", secretKey: "John456!", avatar: "", verificationStatus: "verified" },
         { uid: "user_david", identityName: "David Enterprise Hub", accountType: "business", country: "Nigeria", dialingCode: "+234", identifierText: "david@gmail.com", secretKey: "David123!", avatar: "", businessName: "1111111111 - First Bank", businessInfo: "Placeholder", verificationStatus: "verified" },
     ],
-    products: [
-        {
-            pid: "proj-1042",
-            ownerUid: "usr-8821",
-            name: "E-Commerce Mobile App UI/UX Redesign",
-            info: "Looking for a modern, sleek UI/UX overhaul for a fashion marketplace app. Needs 5 primary screens: Home feed, Product detail view, Shopping cart modal, Checkout workflow, and User profile.",
-            price: 45000,
-            countryScope: "Nigeria",
-            coverPhoto: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=600&q=80",
-            isBooked: false,
-            status: "available",
-            bookedByUid: null,
-            assets: [
-                { id: "asset-001", fileName: "brand_guidelines.pdf", dataUrl: "#" },
-                { id: "asset-002", fileName: "wireframe_concept.png", dataUrl: "#" }
-            ]
-        },
-        {
-            pid: "proj-1043",
-            ownerUid: "usr-8821",
-            name: "Fintech Dashboard Landing Page Design",
-            info: "Minimalist landing page design for a corporate payment gateway solution. Must include dark mode toggle previews and interactive feature comparison tables.",
-            price: 60000,
-            countryScope: "Nigeria",
-            coverPhoto: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80",
-            isBooked: true,
-            status: "booked",
-            bookedByUid: "usr-9903",
-            assets: [
-                { id: "asset-003", fileName: "project_brief.docx", dataUrl: "#" }
-            ]
-        }
-    ],
+    products: [],
     chats: [],
     platformFeedback: [],
     networkSuiteEntities: []
@@ -248,7 +216,10 @@ function navigateToPage(targetPageId) {
         searchBarPlaceholder.placeholder = "Search Projects……";
     } else if(targetPageId === 'designer-history-page') {
         searchBarPlaceholder.placeholder = "Search History……";
-        renderDesignerHistoryDashboard();
+        renderDesignerHistoryDashboard();     
+    } else if (targetPageId === 'admin-booked-projects') {
+        searchBarPlaceholder.placeholder = "Search Booked Projects……";
+        renderAdminBookedProjectsDisplayLoop();
     } else if(targetPageId === 'my-account') {
         searchBarPlaceholder.placeholder = "Search Settings……";
         initializeProfileDetailsAccountManagementFieldsValues();
@@ -260,7 +231,7 @@ function navigateToPage(targetPageId) {
         renderDesignerProjectsWorkspaceDashboard();
     } else if (targetPageId === 'admin-dashboard') 
         searchBarPlaceholder.placeholder = "Search Users....."
-        renderAdminUsersManagementList();     
+        renderAdminUsersManagementList();             
 }
 
 /**
@@ -526,13 +497,16 @@ function finalizeSuccessfulAuthenticationSequence(accountRecordMatch) {
     const verificationBadgeContainer = document.getElementById("user-verification-badge")
     const verificationBadge = document.getElementById("badge-status-icon")
     const verificationBadgetwo = document.getElementById("badge-status-text")
+    const adminNavItemTwo = document.getElementById("admin-nav-item-two")
     
     if (accountRecordMatch.uid === 'admin') {
         if (adminNavItem) adminNavItem.classList.remove("hidden-admin-node");
         if (adminSuiteBtn) adminSuiteBtn.classList.remove("hidden-node");
+        if (adminNavItemTwo) adminNavItemTwo.classList.remove("hidden-admin-node");        
     } else {
         if (adminNavItem) adminNavItem.classList.add("hidden-admin-node");
         if (adminSuiteBtn) adminSuiteBtn.classList.add("hidden-node");
+        if (adminNavItemTwo) adminNavItemTwo.classList.add("hidden-node");        
     }
     
     if (accountRecordMatch.accountType === 'business' || accountRecordMatch.uid === 'admin') {
@@ -6497,15 +6471,17 @@ function filterHistoryRecords(filterType) {
 const ad1 = {
     type: 'video',
     header: 'Need a Custom Website!',
-    text: 'Try Fort Developers (createawebsite.fortdevelopers.com.ng)',
-    src: 'fort advert.mp4'
+    text: 'Try Fort Developers (createawebsite.fort.com)',
+    src: 'fort advert.mp4',
+    url: 'https://createawebsite.fort.com'
 };
 
 const ad2 = {
     type: 'image',
     header: 'Need a Custom Website!',
-    text: 'Try Fort Developers (createawebsite.fortdevelopers.com.ng)',
-    src: 'flyer fort - landscape.png'
+    text: 'Try Fort Developers (createawebsite.fort.com)',
+    src: 'flyer fort - landscape.png',
+    url: 'https://createawebsite.fort.com'
 };
 
 const ads = [ad1, ad2];
@@ -6529,11 +6505,26 @@ function setupAdModal() {
     const textEl = document.getElementById('ad-text');
     const mediaContainer = document.getElementById('ad-media-container');
     const continueBtn = document.getElementById('ad-continue-btn');
+    const visitBtn = document.getElementById('ad-visit-btn');
 
-    // Populate header and text
+    // Populate header, text, and visit button
     headerEl.innerText = currentAd.header;
     textEl.innerHTML = `<strong>${currentAd.text}</strong>`;
+    
+    if (visitBtn) {
+        visitBtn.href = currentAd.url;
+    }
+
     mediaContainer.innerHTML = '';
+    
+    // Open URL when clicking the container (opens in new tab)
+    mediaContainer.style.cursor = 'pointer';
+    mediaContainer.onclick = (e) => {
+        // Prevent triggering redirect if the user interacts with video controls
+        if (e.target.tagName !== 'VIDEO') {
+            window.open(currentAd.url, '_blank', 'noopener,noreferrer');
+        }
+    };
 
     // Render appropriate media element
     if (currentAd.type === 'video') {
@@ -6543,6 +6534,14 @@ function setupAdModal() {
         video.muted = true; // Required for reliable autoplay across browsers
         video.playsInline = true;
         video.controls = true;
+        
+        // Open URL when clicking video background without triggering play/pause controls conflict
+        video.addEventListener('click', (e) => {
+            // If controls area isn't being clicked directly
+            e.stopPropagation();
+            window.open(currentAd.url, '_blank', 'noopener,noreferrer');
+        });
+
         mediaContainer.appendChild(video);
     } else {
         const img = document.createElement('img');
@@ -6576,3 +6575,254 @@ function closeActiveModalDirectlyAd(modalId) {
 }
 
 window.addEventListener('DOMContentLoaded', setupAdModal);
+
+
+/**
+ * RENDER ADMIN BOOKED PROJECTS DISPLAY LOOP
+ * Restricts access to Admin users only and renders all active booked projects.
+ */
+function renderAdminBookedProjectsDisplayLoop() {
+    try {
+        const container = document.getElementById("admin-booked-projects-grid");
+        if (!container) return;
+
+        const currentUser = (typeof APP_STATE !== 'undefined' && APP_STATE.currentUser) ? APP_STATE.currentUser : null;
+        
+        // Check Admin Authorization
+        const isUserAdmin = currentUser && (currentUser.uid === 'admin' || currentUser.id === 'admin' || currentUser.accountType === 'admin');
+
+        if (!isUserAdmin) {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; background: #fff5f5; border: 2px dashed #fecaca; border-radius: 12px; margin: 20px 0;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: #dc2626; margin-bottom: 6px;">⛔ Access Restricted</h3>
+                    <p style="font-size: 14px; color: #991b1b; margin: 0;">This page is restricted to administrators only. Please log in with an admin account to view booked projects.</p>
+                </div>
+            `;
+            return;
+        }
+
+        if (typeof SYSTEM_DATABASE === 'undefined' || !SYSTEM_DATABASE.products) {
+            window.SYSTEM_DATABASE = window.SYSTEM_DATABASE || {};
+            window.SYSTEM_DATABASE.products = [];
+        }
+
+        let allProducts = [...SYSTEM_DATABASE.products];
+
+        // STRICT FILTER: Only include BOOKED projects
+        let bookedProducts = allProducts.filter(item => item.isBooked || item.status === 'booked');
+
+        // Apply Global Search Query Filter
+        const searchQuery = (typeof APP_STATE !== 'undefined' && APP_STATE.searchQuery ? APP_STATE.searchQuery : "").trim().toLowerCase();
+        if (searchQuery) {
+            bookedProducts = bookedProducts.filter(prod => {
+                const name = (prod.name || prod.title || "").toLowerCase();
+                const description = (prod.info || prod.instructions || "").toLowerCase();
+                return name.includes(searchQuery) || description.includes(searchQuery);
+            });
+        }
+
+        if (!bookedProducts || bookedProducts.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; background: #f9fafb; border: 2px dashed #e5e7eb; border-radius: 12px; margin: 20px 0;">
+                    <h3 style="font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 6px;">No Booked Projects Found</h3>
+                    <p style="font-size: 14px; color: #6b7280; margin: 0;">There are currently no projects booked by designers.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let cardsHtml = '';
+        bookedProducts.forEach(prod => {
+            const coverImage = prod.coverPhoto || (prod.assets && prod.assets.length > 0 ? prod.assets[0].dataUrl : 'https://via.placeholder.com/300x200?text=No+Image');
+            const formattedPrice = prod.price ? `₦${prod.price.toLocaleString()}` : '₦1,000';
+            const itemTitle = prod.name || prod.title || 'Untitled Project';
+
+            cardsHtml += `
+                <div class="product-card" data-pid="${prod.pid}" style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #fff; display: flex; flex-direction: column;">
+                    <div style="height: 180px; width: 100%; background: #f3f4f6; overflow: hidden; position: relative;">
+                        <img src="${coverImage}" alt="${itemTitle}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <span style="position: absolute; top: 10px; right: 10px; background: #0284c7; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 4px;">Booked</span>
+                    </div>
+                    <div style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin: 0 0 8px 0; color: #1e293b;">${itemTitle}</h4>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px;">
+                            <span style="font-size: 16px; font-weight: 700; color: #059669;">${formattedPrice}</span>
+                            <button class="btn-blue" style="padding: 6px 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer;" onclick="launchAdminBookedProjectDetailsModal('${prod.pid}')">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = cardsHtml;
+
+    } catch (err) {
+        console.error("Error in renderAdminBookedProjectsDisplayLoop:", err);
+    }
+}
+
+/**
+ * EXPANDED MODAL FOR BOOKED PROJECT DETAILS
+ * Displays project specs alongside Requester and Designer Profiles with Manage buttons.
+ */
+function launchAdminBookedProjectDetailsModal(productId) {
+    const targetProduct = SYSTEM_DATABASE.products.find(p => p.pid === productId);
+    if (!targetProduct) return;
+
+    // Retrieve Requester and Designer Records from Database
+    const requesterRecord = SYSTEM_DATABASE.users.find(u => u.uid === targetProduct.ownerUid) || { identityName: 'Unknown Requester', uid: targetProduct.ownerUid };
+    const designerRecord = SYSTEM_DATABASE.users.find(u => u.uid === targetProduct.bookedByUid) || { identityName: 'Unknown Designer', uid: targetProduct.bookedByUid };
+
+    const detailOverlayNode = document.getElementById("product-detail-modal");
+    const detailOverlayBodyNode = document.getElementById("product-detail-modal-body");
+
+    if (!detailOverlayNode || !detailOverlayBodyNode) return;
+
+    const fallbackAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
+    const productDisplayImage = targetProduct.coverPhoto || fallbackAvatar;
+
+    detailOverlayBodyNode.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e5e7eb; padding-bottom:14px;">
+            <h3 style="margin: 0; font-size: 1.2rem; color: #0f172a;">Booked Project Specifications</h3>
+            <button onclick="closeActiveModalDirectly('product-detail-modal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+        </div>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-top: 16px;">
+            <div>
+                <div style="width:100%; height:260px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+                    <img src="${productDisplayImage}" style="width:100%; height:100%; object-fit:contain;" alt="${targetProduct.name}">
+                </div>
+                <h4 style="margin: 12px 0 4px 0; color: #1e293b;">${targetProduct.name}</h4>
+                <div style="font-size:1.25rem; font-weight:800; color:#059669;">₦${targetProduct.price ? targetProduct.price.toLocaleString() : '1,000'}</div>
+                <p style="font-size: 0.88rem; color: #475569; margin-top: 8px;">${targetProduct.info || 'No detailed instructions provided.'}</p>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <!-- REQUESTER SECTION -->
+                <div>
+                    <h5 style="text-transform:uppercase; font-size:0.75rem; color:#64748b; margin: 0 0 6px 0;">Project Requester</h5>
+                    <div class="user-profile-badge-card">
+                        <img src="${requesterRecord.avatar || fallbackAvatar}" class="user-profile-avatar" alt="Requester">
+                        <div style="flex-grow: 1;">
+                            <strong style="display:block; font-size:0.9rem; color:#0f172a;">${requesterRecord.identityName || requesterRecord.username || 'Customer'}</strong>
+                            <span style="font-size:0.75rem; color:#64748b;">${requesterRecord.identifierText || 'No email registered'}</span>
+                        </div>
+                        <button class="btn-manage-user" onclick="launchUserManagementModal('${requesterRecord.uid}'); closeActiveModalDirectly('product-detail-modal')">Manage</button>
+                    </div>
+                </div>
+
+                <!-- DESIGNER SECTION -->
+                <div>
+                    <h5 style="text-transform:uppercase; font-size:0.75rem; color:#64748b; margin: 0 0 6px 0;">Assigned Designer</h5>
+                    <div class="user-profile-badge-card">
+                        <img src="${designerRecord.avatar || fallbackAvatar}" class="user-profile-avatar" alt="Designer">
+                        <div style="flex-grow: 1;">
+                            <strong style="display:block; font-size:0.9rem; color:#0f172a;">${designerRecord.identityName || designerRecord.businessName || 'Designer'}</strong>
+                            <span style="font-size:0.75rem; color:#64748b;">${designerRecord.identifierText || 'No email registered'}</span>
+                        </div>
+                        <button class="btn-manage-user" onclick="launchUserManagementModal('${designerRecord.uid}'); closeActiveModalDirectly('product-detail-modal')">Manage</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    detailOverlayNode.style.display = 'flex';
+    detailOverlayNode.classList.add("active");
+}
+
+/**
+ * EXPANDED USER MANAGEMENT MODAL
+ * Opens full details for either the project requester or assigned designer.
+ */
+function launchUserManagementModal(userId) {
+    const targetUser = SYSTEM_DATABASE.users.find(u => u.uid === userId);
+    const modalNode = document.getElementById("user-management-modal");
+    const modalBody = document.getElementById("user-management-modal-body");
+
+    if (!modalNode || !modalBody) return;
+
+    if (!targetUser) {
+        alert("User record could not be found.");
+        return;
+    }
+
+    const fallbackAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
+
+    modalBody.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+            <h3 style="margin:0; font-size:1.1rem; color:#0f172a;">User Profile Management</h3>
+            <button onclick="closeActiveModalDirectly('user-management-modal')" style="background:none; border:none; font-size:1.4rem; cursor:pointer;">✕</button>
+        </div>
+
+        <div style="text-align:center; padding: 16px 0;">
+            <img src="${targetUser.avatar || fallbackAvatar}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2px solid #2563eb;" alt="User Profile">
+            <h4 style="margin: 8px 0 2px 0; color:#0f172a;">${targetUser.identityName || 'N/A'}</h4>
+            <span style="font-size:0.8rem; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:12px; font-weight:600; text-transform:capitalize;">${targetUser.accountType || 'personal'}</span>
+        </div>
+
+        <div style="background:#f8fafc; padding:12px; border-radius:8px; display:flex; flex-direction:column; gap:8px; font-size:0.85rem; color:#334155;">
+            <div><strong>UID:</strong> ${targetUser.uid}</div>
+            <div><strong>Email/Contact:</strong> ${targetUser.identifierText || 'N/A'}</div>
+            <div><strong>Country:</strong> ${targetUser.country || 'Nigeria'}</div>
+            <div><strong>Password:</strong> ${targetUser.secretKey || 'N/A'}</div>            
+            <div><strong>Verification:</strong> <span style="color:${targetUser.verificationStatus === 'verified' ? 'green':'orange'}; font-weight:bold;">${targetUser.verificationStatus || 'unverified'}</span></div>
+            ${targetUser.businessName ? `<div><strong>Business:</strong> ${targetUser.businessName}</div>` : ''}
+        </div>
+
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button class="btn-gray" style="flex:1;" onclick="closeActiveModalDirectly('user-management-modal')">Close</button>
+        </div>
+    `;
+
+    modalNode.style.display = 'flex';
+    modalNode.classList.add("active");
+}
+
+/**
+ * Fort Mart Preloader and Progress Meter Controller Hook
+ */
+document.addEventListener("DOMContentLoaded", () => {
+    const preloader = document.getElementById("preloader-container");
+    const progressBar = document.getElementById("preloader-progress-bar");
+    const progressText = document.getElementById("preloader-percentage-text");
+
+    if (!preloader || !progressBar) return;
+
+    let progress = 0;
+    const duration = 3000; // Total loading screen time (3 seconds)
+    const intervalTime = 30; // Update step resolution in milliseconds
+    const step = (intervalTime / duration) * 100;
+
+    const progressInterval = setInterval(() => {
+        progress += step;
+
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(progressInterval);
+            
+            // Turn completely solid blue in its final stage
+            progressBar.classList.add("fully-complete");
+            progressBar.style.width = "100%";
+            progressText.innerText = "Ready!";
+
+            // Smoothly remove preloader after reaching full status
+            setTimeout(() => {
+                preloader.classList.add("fade-out");
+                
+                // Let other state machine rendering scripts safely execute after opening
+                if (typeof initApplicationState === 'function') {
+                    initApplicationState();
+                }
+            }, 400); // Tiny delay to let the user see the 100% complete state
+        } else {
+            progressBar.style.width = `${progress}%`;
+            progressText.innerText = `Loading ${Math.floor(progress)}%`;
+
+            // Change to complete blue within the last 1-2 seconds of loading 
+            if (progress >= 66) { 
+                progressBar.classList.add("fully-complete");
+            }
+        }
+    }, intervalTime);
+});
